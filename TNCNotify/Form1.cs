@@ -27,7 +27,7 @@ namespace TNCNotify
         {
 
             MachineCom MCOM = new MachineCom();
-            MCOM.CreateConnection(0, "10.0.1.8", "19000");
+            MCOM.CreateConnection(0, "192.168.1.151", "19000");
         }
 
         private void signInToolStripMenuItem_Click(object sender, EventArgs e)

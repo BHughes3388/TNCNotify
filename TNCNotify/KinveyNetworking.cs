@@ -128,7 +128,7 @@ namespace TNCNotify
             //var query = dataStore.Where(x => x.machineid.Contains(x.ID));
             Machine machine = await dataStore.FindByIDAsync("59fe06d2992e9c5dda544d16");
             //Machine machine = new Machine();
-            machine.IP = "10.0.1.8";
+            machine.IP = "192.168.1.151";
             Console.WriteLine("machine: {0}", machine.IP);
 
             MachineCom MCOM = new MachineCom();

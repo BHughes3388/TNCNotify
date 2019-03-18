@@ -8,7 +8,7 @@ using Kinvey;
 
 namespace TNCNotify
 {
-
+    
     [JsonObject]
     public class Machine
     {
@@ -97,7 +97,7 @@ namespace TNCNotify
         [JsonProperty("Connected")]
         public bool Connected { get; set; }
     }
-
+    
     [JsonObject(MemberSerialization.OptIn)]
     public class Error : Entity
     {
@@ -128,13 +128,30 @@ namespace TNCNotify
             //var query = dataStore.Where(x => x.machineid.Contains(x.ID));
             Machine machine = await dataStore.FindByIDAsync("59fe06d2992e9c5dda544d16");
             //Machine machine = new Machine();
-            //machine.IP = "192.168.1.151";
-
+            machine.IP = "10.0.1.8";
+            Console.WriteLine("machine: {0}", machine.IP);
 
             MachineCom MCOM = new MachineCom();
             MCOM.machine = machine;
             MCOM.CreateConnection(0, machine.IP, "19000");
 
+
+        }
+
+        public async void UpdateTNCMachine(TNCMachine machine)
+        {
+            DataStore<TNCMachine> dataStore = DataStore<TNCMachine>.Collection("TNCMachines", DataStoreType.NETWORK);
+
+            try
+            {
+                TNCMachine updatedMachine = await dataStore.SaveAsync(machine);
+                Console.WriteLine("Machine Program Status : {0}", updatedMachine.ProgramStatus);
+            }
+            catch (KinveyException ke)
+            {
+                // handle error
+                Console.WriteLine("Exception: " + ke);
+            }
 
         }
 

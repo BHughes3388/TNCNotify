@@ -19,39 +19,47 @@ namespace TNCNotify
         {
             InitializeComponent();
 
-            //hack log in
-            if (Client.SharedClient.ActiveUser == null)
-            {
-                Login("bhughes3388@gmail.com", "password");
-            }
-            else
-            {
-                //User user = Client.SharedClient.ActiveUser;
-                //user.Logout();
-
-                //Client.SharedClient.ActiveUser.RetrieveAsync(Client.SharedClient.ActiveUser.Id);
-
-                //Console.WriteLine("machineIds " + Client.SharedClient.ActiveUser.Attributes["Machines"].Count());
-
-               KinveyNetworking networking = new KinveyNetworking();
-               networking.GetMachines(null);
-               Console.WriteLine("Already Logged in");
-            }
 
         }
 
-        private static async void Login(string username, string password)
-        {
-            User myUser = await User.LoginAsync(username, password);
-            Console.WriteLine(myUser.UserName + " logged in");
-
-        }
 
         private void SaveError_Click(object sender, EventArgs e)
         {
 
             MachineCom MCOM = new MachineCom();
-            MCOM.CreateConnection(0, "192.168.1.151", "19000");
+            MCOM.CreateConnection(0, "10.0.1.8", "19000");
+        }
+
+        private void signInToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Client.SharedClient.ActiveUser == null)
+            {
+                Console.WriteLine("Sign In");
+                Form signInForm = new SignIn();
+                signInForm.Show();
+
+            }
+            else
+            {
+                Console.WriteLine("Sign Out");
+
+                User user = Client.SharedClient.ActiveUser;
+                user.Logout();
+
+            }
+        }
+
+        private void toolsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Client.SharedClient.ActiveUser == null)
+            {
+                signInToolStripMenuItem.Text = "Sign In";
+
+            }
+            else
+            {
+                signInToolStripMenuItem.Text = "Sign Out";
+            }
         }
     }
 }

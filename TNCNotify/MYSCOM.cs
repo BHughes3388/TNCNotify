@@ -439,7 +439,11 @@ namespace TNCNotify
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_DATA);
 
             errorReset = false;
-            SetTimer(SCom);
+             SetTimer(SCom);
+            Console.WriteLine("started connection");
+
+           SCom.GetTNCVersion();
+            //Console.WriteLine("programStatus: {0}", programStatus);
 
         }
 
@@ -452,7 +456,7 @@ namespace TNCNotify
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
 
-            //OnTimedEvent(null, null, null);
+            OnTimedEvent(null, null, SCom);
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e, MYSCOM SCom)
@@ -477,8 +481,11 @@ namespace TNCNotify
 
             //Program Status
             string programStatus = SCom.GetProgramStatus();
+            Console.WriteLine("programStatus: {0}", programStatus);
             machineDict["ProgramStatus"] = programStatus;
 
+
+            
             //Program Execution Point
             Dictionary<string, string> executionPoint = SCom.GetExecutionPoint();
             machineDict["NameSelectedProgram"] = executionPoint["NameSelectedProgram"];
@@ -488,7 +495,7 @@ namespace TNCNotify
             //Execution Mode
             string executionMode = SCom.GetExecutionMode();
             machineDict["ExecutionMode"] = executionMode;
-
+            
             //Tool
             Dictionary<string, string> tool = SCom.GetTool();
             machineDict["ToolNr"] = tool["ToolNr"];
@@ -584,13 +591,15 @@ namespace TNCNotify
             {
                 Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value);
             }
-
+            
 
             //Update Machine On Server
-            UpdateMachine(machineDict);
+           UpdateMachine(machineDict);
 
             //Check If Machine Has Error
-            CheckForErrors(machineDict["PLCError"], SCom);
+            //CheckForErrors(machineDict["PLCError"], SCom);
+
+            //Amber learned comments here 
 
             //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
         }
@@ -606,6 +615,9 @@ namespace TNCNotify
 
         private void UpdateMachine(Dictionary<string, string> machineDict)
         {
+            Machine machine = new Machine();
+
+            machine.machineid = "5c8e7a1ba815dc7dca74d570";
             machine.MachineName = machineDict["MachineName"];
             machine.NCSpindleOverride = machineDict["NCSpindleOverride"];
             machine.NCFeedOveride = machineDict["NCFeedOverride"];

@@ -13,7 +13,7 @@ using ADONTEC.Comm;
 
 namespace TNCNotify
 {
-    public partial class Form1 : Form
+    public partial class Form1 : MetroFramework.Forms.MetroForm
     {
         public Form1()
         {

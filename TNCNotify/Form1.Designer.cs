@@ -50,9 +50,9 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolsToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Location = new System.Drawing.Point(20, 60);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(790, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(750, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -69,14 +69,14 @@
             // signInToolStripMenuItem
             // 
             this.signInToolStripMenuItem.Name = "signInToolStripMenuItem";
-            this.signInToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.signInToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.signInToolStripMenuItem.Text = "Sign in";
             this.signInToolStripMenuItem.Click += new System.EventHandler(this.signInToolStripMenuItem_Click);
             // 
             // addMachineToolStripMenuItem
             // 
             this.addMachineToolStripMenuItem.Name = "addMachineToolStripMenuItem";
-            this.addMachineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addMachineToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.addMachineToolStripMenuItem.Text = "Add Machine";
             // 
             // Form1
@@ -88,7 +88,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Dashboard";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

@@ -12,7 +12,7 @@ using Kinvey;
 
 namespace TNCNotify
 {
-    public partial class SignIn : Form
+    public partial class SignIn : MetroFramework.Forms.MetroForm
     {
         public SignIn()
         {

@@ -61,5 +61,12 @@ namespace TNCNotify
                 signInToolStripMenuItem.Text = "Sign Out";
             }
         }
+
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            MachineCom MCOM = new MachineCom();
+            MCOM.CreateConnection(0, "192.168.1.151", "19000");
+        }
+
     }
 }

@@ -120,10 +120,21 @@ namespace TNCNotify
     class KinveyNetworking
     {
 
-        public async void GetMachines(string[] machineIds)
+        public async Task<List<Machine>> GetMachines(List<string> machineIds)
         {
 
             DataStore<Machine> dataStore = DataStore<Machine>.Collection("Machines", DataStoreType.NETWORK);
+
+            //var query = dataStore.Where(x => x.machineid in machineIds);
+
+            //List<Machine> machines = await dataStore.FindAsync(query);
+
+            string query = "{\"_id\":{\"$in\":" + string.Format("[\"{0}\"]", string.Join("\", \"", machineIds)) + "}}";
+
+            List<Machine> machines = await dataStore.FindWithMongoQueryAsync(query);
+
+            return machines;
+            /*
 
             //var query = dataStore.Where(x => x.machineid.Contains(x.ID));
             Machine machine = await dataStore.FindByIDAsync("59fe06d2992e9c5dda544d16");
@@ -135,7 +146,7 @@ namespace TNCNotify
             MCOM.machine = machine;
             MCOM.CreateConnection(0, machine.IP, "19000");
 
-
+            */
         }
 
         public async void UpdateTNCMachine(TNCMachine machine)

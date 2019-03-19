@@ -14,14 +14,6 @@ namespace TNCNotify
         [JsonProperty("programstatus")]
         public string ProgramStatus { get; set; }
 
-        [JsonProperty("error")]
-        public TNCMachineError MachineError { get; set; }
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
-    class TNCMachineError : Entity
-    {
-        [JsonProperty("errortext")]
-        public string ErrorText { get; set; }
-    }
 }

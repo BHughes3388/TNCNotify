@@ -25,10 +25,11 @@ namespace TNCNotify
             //.setOfflinePlatform(new SQLite.Net.Platform.Win32.SQLitePlatformWin32());
 
             Client kinveyClient = builder.Build();
+            
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Main());
 
         } 
 

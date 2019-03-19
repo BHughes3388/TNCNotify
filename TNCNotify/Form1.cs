@@ -19,7 +19,8 @@ namespace TNCNotify
         {
             InitializeComponent();
 
-
+            UserControl userControl = new UserControl1();
+            metroPanel1.Controls.Add(userControl);
         }
 
 

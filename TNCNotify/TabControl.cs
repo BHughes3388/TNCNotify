@@ -60,10 +60,11 @@ namespace TNCNotify
 
         private void startButton_Click(object sender, EventArgs e)
         {
-            MachineCom machineCom = new MachineCom();
 
             foreach (int index in machineListView.CheckedIndices)      
             {
+                MachineCom machineCom = new MachineCom();
+
                 Machine machine = machines[index];
                 Console.WriteLine("Check Indexs: " + machine.MachineName);
 

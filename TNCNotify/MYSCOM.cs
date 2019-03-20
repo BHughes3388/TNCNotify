@@ -102,6 +102,25 @@ namespace TNCNotify
 
         }
 
+        public void getTNCStatus()
+        {
+            int nErr;
+            int pdwStatus = 0;
+
+            nErr = SuperCom.PLSV2.Heidenhain.HN_GetTNCStatus(CommId, ref pdwStatus);
+
+            if (nErr == SuperCom.PLSV2.Heidenhain.HN_ERR_NONE)
+            {
+                Console.Out.WriteLine(" TNC Status ={0:X8} ", (uint)pdwStatus);
+
+            }
+            else
+            {
+                Console.Out.WriteLine("tnc status error");
+            }
+
+        }
+
         public String GetProgramStatus()
         {
             int nErr;
@@ -445,10 +464,11 @@ namespace TNCNotify
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_DATA);
 
             errorReset = false;
-             SetTimer(SCom);
+            SetTimer(SCom);
             Console.WriteLine("started connection");
 
-           SCom.GetTNCVersion();
+            //SCom.GetTNCVersion();
+            //SCom.getTNCStatus();
             //Console.WriteLine("programStatus: {0}", programStatus);
 
         }
@@ -527,7 +547,7 @@ namespace TNCNotify
                 new Dictionary<string, string>(),
                 new Dictionary<string, string>(),
                 new Dictionary<string, string>(),
-                new Dictionary<string, string>()
+                //new Dictionary<string, string>()
             };
 
             //Tool Name
@@ -562,34 +582,34 @@ namespace TNCNotify
             matrix[9].Add("Path", "\\PLC\\memory\\S\\25");
             matrix[9].Add("Key", "MachineName");
             //Pallet Number
-            matrix[10].Add("Path", "\\PLC\\memory\\S\\2");
-            matrix[10].Add("Key", "PalletNr");
+            //matrix[10].Add("Path", "\\PLC\\memory\\S\\2");
+            //matrix[10].Add("Key", "PalletNr");
             //NC Spindle Override
-            matrix[11].Add("Path", "\\PLC\\memory\\W\\492");
-            matrix[11].Add("Key", "NCSpindleOverride");
+            matrix[10].Add("Path", "\\PLC\\memory\\W\\492");
+            matrix[10].Add("Key", "NCSpindleOverride");
             //NC Feed Override
-            matrix[12].Add("Path", "\\PLC\\memory\\W\\494");
-            matrix[12].Add("Key", "NCFeedOverride");
+            matrix[11].Add("Path", "\\PLC\\memory\\W\\494");
+            matrix[11].Add("Key", "NCFeedOverride");
             //Actual Spindle Override
-            matrix[13].Add("Path", "\\PLC\\memory\\W\\764");
-            matrix[13].Add("Key", "PLCSpindleOverride");
+            matrix[12].Add("Path", "\\PLC\\memory\\W\\764");
+            matrix[12].Add("Key", "PLCSpindleOverride");
             //Actual Feed Override
-            matrix[14].Add("Path", "\\PLC\\memory\\W\\766");
-            matrix[14].Add("Key", "PLCFeedOverride");
+            matrix[13].Add("Path", "\\PLC\\memory\\W\\766");
+            matrix[13].Add("Key", "PLCFeedOverride");
             //Error Operand
-            matrix[15].Add("Path", "\\PLC\\memory\\M\\4227");
-            matrix[15].Add("Key", "PLCError");
+            matrix[14].Add("Path", "\\PLC\\memory\\M\\4227");
+            matrix[14].Add("Key", "PLCError");
 
             foreach (Dictionary<string, string> dict in matrix)
             {
                 String sRetValue = "";
                 byte cType = 32; // space
 
-                if (SuperCom.PLSV2.Heidenhain.HN_ERR_NONE ==
-                    SCom.DataGetValue(dict["Path"], ref cType, ref sRetValue))
+                if (SuperCom.PLSV2.Heidenhain.HN_ERR_NONE == SCom.DataGetValue(dict["Path"], ref cType, ref sRetValue))
                 {
                     machineDict[dict["Key"]] = sRetValue;
                 }
+
             }
 
 
@@ -600,12 +620,10 @@ namespace TNCNotify
             
 
             //Update Machine On Server
-           UpdateMachine(machineDict);
+            UpdateMachine(machineDict);
 
             //Check If Machine Has Error
-            //CheckForErrors(machineDict["PLCError"], SCom);
-
-            //Amber learned comments here 
+            CheckForErrors(machineDict["PLCError"], SCom);
 
             //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
         }

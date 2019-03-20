@@ -393,6 +393,12 @@ namespace TNCNotify
 
         private bool errorReset;
 
+        public void StartMachine(Machine myMachine, int index)
+        {
+            machine = myMachine;
+            CreateConnection(index, myMachine.IP, "19000");
+        }
+
         public void CreateConnection(int Com, string ip, string port)
         {
 
@@ -615,15 +621,15 @@ namespace TNCNotify
 
         private void UpdateMachine(Dictionary<string, string> machineDict)
         {
-            Machine machine = new Machine();
+            //Machine machine = new Machine();
 
-            machine.machineid = "5c8e7a1ba815dc7dca74d570";
-            machine.MachineName = machineDict["MachineName"];
+            //machine.machineid = "5c8e7a1ba815dc7dca74d570";
+            //machine.MachineName = machineDict["MachineName"];
             machine.NCSpindleOverride = machineDict["NCSpindleOverride"];
             machine.NCFeedOveride = machineDict["NCFeedOverride"];
             machine.PLCSpindleOverride = machineDict["PLCSpindleOverride"];
             machine.PLCFeedOverride = machineDict["PLCFeedOverride"];
-            machine.PAL = PalNrFromString(machineDict["PalletNr"]);
+            //machine.PAL = PalNrFromString(machineDict["PalletNr"]);
             machine.ProgramStatus = machineDict["ProgramStatus"];
             machine.SelectedProgram = machineDict["NameSelectedProgram"];
             machine.ActiveProgram = machineDict["NameActiveProgram"];

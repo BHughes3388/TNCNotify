@@ -47,7 +47,7 @@ namespace TNCNotify
 
             foreach (Machine machine in machines)
             {
-                Console.WriteLine("machines name: {0} machine ip: {0} ", machine.Name, machine.IP);
+                Console.WriteLine("machines name: {0} machine ip: {1} ", machine.Name, machine.IP);
 
                 machineListView.Items.Add(new ListViewItem(new string[] {machine.Name, machine.IP, machine.MachineName }));
             }
@@ -60,9 +60,15 @@ namespace TNCNotify
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            MachineCom machineCom = new MachineCom();
+
             foreach (int index in machineListView.CheckedIndices)      
             {
-                Console.WriteLine("Check Indexs: " + index);
+                Machine machine = machines[index];
+                Console.WriteLine("Check Indexs: " + machine.MachineName);
+
+                machineCom.StartMachine(machine, index);
+
             }
         }
     }

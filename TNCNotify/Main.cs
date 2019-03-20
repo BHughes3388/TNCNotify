@@ -39,6 +39,24 @@ namespace TNCNotify
             Console.WriteLine("Remove Sign in");
         }
 
+        public void Main_Resize(Object sender, EventArgs e)
+        {
+            Console.WriteLine("resize");
 
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+                notifyIcon.Visible = true;
+            }
+
+        }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon.Visible = false;
+        }
     }
+
 }

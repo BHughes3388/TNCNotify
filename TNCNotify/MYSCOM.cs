@@ -104,14 +104,17 @@ namespace TNCNotify
 
         public void getTNCStatus()
         {
-            int nErr;
-            int pdwStatus = 0;
+            int dwTNCStatus = 0;
+            int ret = SuperCom.PLSV2.Heidenhain.HN_GetTNCStatus(CommId, ref dwTNCStatus);
 
-            nErr = SuperCom.PLSV2.Heidenhain.HN_GetTNCStatus(CommId, ref pdwStatus);
-
-            if (nErr == SuperCom.PLSV2.Heidenhain.HN_ERR_NONE)
+            if (ret == SuperCom.PLSV2.Heidenhain.HN_ERR_NONE)
             {
-                Console.Out.WriteLine(" TNC Status ={0:X8} ", (uint)pdwStatus);
+                if ((dwTNCStatus & SuperCom.PLSV2.Heidenhain.HN_ST_ENABLE_PAL_C) == SuperCom.PLSV2.Heidenhain.HN_ST_ENABLE_PAL_C) // if set
+                {
+                    Console.Out.WriteLine("critical message");
+                }
+
+                Console.Out.WriteLine(" TNC Status = {0}, ret = {1} ", (uint)dwTNCStatus, ret);
 
             }
             else
@@ -463,7 +466,7 @@ namespace TNCNotify
 
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_DATA);
 
-            errorReset = false;
+            errorReset = true;
             SetTimer(SCom);
             Console.WriteLine("started connection");
 

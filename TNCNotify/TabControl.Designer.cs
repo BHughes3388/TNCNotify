@@ -28,15 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.metroTabControl1 = new MetroFramework.Controls.MetroTabControl();
             this.metroTabPage1 = new MetroFramework.Controls.MetroTabPage();
+            this.startButton = new MetroFramework.Controls.MetroButton();
+            this.refreshButton = new MetroFramework.Controls.MetroButton();
             this.machineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabPage2 = new MetroFramework.Controls.MetroTabPage();
             this.metroTabPage3 = new MetroFramework.Controls.MetroTabPage();
-            this.refreshButton = new MetroFramework.Controls.MetroButton();
-            this.startButton = new MetroFramework.Controls.MetroButton();
+            this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).BeginInit();
             this.SuspendLayout();
             // 
             // metroTabControl1
@@ -54,6 +57,7 @@
             this.metroTabControl1.Size = new System.Drawing.Size(867, 461);
             this.metroTabControl1.TabIndex = 0;
             this.metroTabControl1.UseSelectable = true;
+            this.metroTabControl1.UseStyleColors = true;
             // 
             // metroTabPage1
             // 
@@ -72,6 +76,28 @@
             this.metroTabPage1.VerticalScrollbarHighlightOnWheel = false;
             this.metroTabPage1.VerticalScrollbarSize = 10;
             // 
+            // startButton
+            // 
+            this.startButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.startButton.Location = new System.Drawing.Point(757, 381);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(75, 23);
+            this.startButton.TabIndex = 4;
+            this.startButton.Text = "Start";
+            this.startButton.UseSelectable = true;
+            this.startButton.Click += new System.EventHandler(this.startButton_Click);
+            // 
+            // refreshButton
+            // 
+            this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.refreshButton.Location = new System.Drawing.Point(676, 381);
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(75, 23);
+            this.refreshButton.TabIndex = 3;
+            this.refreshButton.Text = "Refresh";
+            this.refreshButton.UseSelectable = true;
+            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+            // 
             // machineListView
             // 
             this.machineListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -84,6 +110,7 @@
             this.machineListView.Name = "machineListView";
             this.machineListView.OwnerDraw = true;
             this.machineListView.Size = new System.Drawing.Size(810, 333);
+            this.machineListView.Style = MetroFramework.MetroColorStyle.Blue;
             this.machineListView.TabIndex = 2;
             this.machineListView.UseCompatibleStateImageBehavior = false;
             this.machineListView.UseSelectable = true;
@@ -117,27 +144,10 @@
             this.metroTabPage3.VerticalScrollbarHighlightOnWheel = false;
             this.metroTabPage3.VerticalScrollbarSize = 10;
             // 
-            // refreshButton
+            // metroStyleManager1
             // 
-            this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.refreshButton.Location = new System.Drawing.Point(676, 381);
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(75, 23);
-            this.refreshButton.TabIndex = 3;
-            this.refreshButton.Text = "Refresh";
-            this.refreshButton.UseSelectable = true;
-            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
-            // 
-            // startButton
-            // 
-            this.startButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.startButton.Location = new System.Drawing.Point(757, 381);
-            this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(75, 23);
-            this.startButton.TabIndex = 4;
-            this.startButton.Text = "Start";
-            this.startButton.UseSelectable = true;
-            this.startButton.Click += new System.EventHandler(this.startButton_Click);
+            this.metroStyleManager1.Owner = this;
+            this.metroStyleManager1.Style = MetroFramework.MetroColorStyle.Orange;
             // 
             // TabControl
             // 
@@ -146,9 +156,12 @@
             this.Controls.Add(this.metroTabControl1);
             this.Name = "TabControl";
             this.Size = new System.Drawing.Size(873, 467);
+            this.Style = MetroFramework.MetroColorStyle.Orange;
+            this.Theme = MetroFramework.MetroThemeStyle.Light;
             this.Load += new System.EventHandler(this.TabControl_Load);
             this.metroTabControl1.ResumeLayout(false);
             this.metroTabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -162,5 +175,6 @@
         private MetroFramework.Controls.MetroListView machineListView;
         private MetroFramework.Controls.MetroButton startButton;
         private MetroFramework.Controls.MetroButton refreshButton;
+        private MetroFramework.Components.MetroStyleManager metroStyleManager1;
     }
 }

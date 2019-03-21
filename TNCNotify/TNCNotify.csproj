@@ -262,7 +262,6 @@
     <Compile Include="User Interface\SignIn.Designer.cs">
       <DependentUpon>SignIn.cs</DependentUpon>
     </Compile>
-    <Compile Include="TNCMachine.cs" />
     <Compile Include="MYSCOM.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

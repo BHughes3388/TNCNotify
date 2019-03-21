@@ -125,45 +125,20 @@ namespace TNCNotify
 
             DataStore<Machine> dataStore = DataStore<Machine>.Collection("Machines", DataStoreType.NETWORK);
 
-            //var query = dataStore.Where(x => x.machineid in machineIds);
-
-            //List<Machine> machines = await dataStore.FindAsync(query);
-
-            string query = "{\"_id\":{\"$in\":" + string.Format("[\"{0}\"]", string.Join("\", \"", machineIds)) + "}}";
-
-            List<Machine> machines = await dataStore.FindWithMongoQueryAsync(query);
-
-            return machines;
-            /*
-
-            //var query = dataStore.Where(x => x.machineid.Contains(x.ID));
-            Machine machine = await dataStore.FindByIDAsync("59fe06d2992e9c5dda544d16");
-            //Machine machine = new Machine();
-            machine.IP = "192.168.1.151";
-            Console.WriteLine("machine: {0}", machine.IP);
-
-            MachineCom MCOM = new MachineCom();
-            MCOM.machine = machine;
-            MCOM.CreateConnection(0, machine.IP, "19000");
-
-            */
-        }
-
-        public async void UpdateTNCMachine(TNCMachine machine)
-        {
-            DataStore<TNCMachine> dataStore = DataStore<TNCMachine>.Collection("TNCMachines", DataStoreType.NETWORK);
-
             try
             {
-                TNCMachine updatedMachine = await dataStore.SaveAsync(machine);
-                Console.WriteLine("Machine Program Status : {0}", updatedMachine.ProgramStatus);
+                List<Machine> machines = await dataStore.FindWithMongoQueryAsync(QueryStringForMachineIds(machineIds));
+                //Console.WriteLine("Machines : {0}", machines);
+                return machines;
             }
             catch (KinveyException ke)
             {
                 // handle error
-                Console.WriteLine("Exception: " + ke);
+                Console.WriteLine("Get Machines Exception: " + ke);
+                return null;
             }
 
+           
         }
 
         public async void UpdateMachine(Machine machine)
@@ -201,6 +176,16 @@ namespace TNCNotify
 
             }
 
+        }
+
+        private string QueryStringForMachineIds(List<string> machineIds)
+        {
+            //formats list of machine ids to string ["machine id 1", "machine id 2", machine id 3]
+            string machineIdsString = string.Format("[\"{0}\"]", string.Join("\", \"", machineIds));
+
+            //formats query string with above machines ids to { "_id" : { "$in" : ["machine id 1", "machine id 2", "machine id 3"] } } 
+            //meaning get objects whose _id are $in the array of ids
+            return string.Format("{{\"_id\":{{\"$in\": {0} }}}}", machineIdsString);
         }
 
     }

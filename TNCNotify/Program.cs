@@ -14,7 +14,7 @@ namespace TNCNotify
         /// </summary>
         [STAThread]
         static void Main()
-        {
+       {
             String appKey = "kid_S1_gbMQ0";
             String appSecret = "21893ef7a99d446a89f9f75e6c4da15d";
             String filePath = "";

@@ -19,7 +19,7 @@ namespace TNCNotify
             InitializeComponent();
 
             User user = Client.SharedClient.ActiveUser;
-
+            ;
             if (user == null)
             {
                 metroUserControl.Controls.Add(new SignInControl());
@@ -37,6 +37,8 @@ namespace TNCNotify
         {
             metroUserControl.Controls.RemoveAt(0);
             Console.WriteLine("Remove Sign in");
+            metroUserControl.Controls.Add(new TabControl());
+
         }
 
         public void Main_Resize(Object sender, EventArgs e)

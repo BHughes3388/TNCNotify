@@ -33,12 +33,14 @@
             this.metroTabPage1 = new MetroFramework.Controls.MetroTabPage();
             this.startButton = new MetroFramework.Controls.MetroButton();
             this.refreshButton = new MetroFramework.Controls.MetroButton();
-            this.machineListView = new MetroFramework.Controls.MetroListView();
+            this.onlineMachineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabPage2 = new MetroFramework.Controls.MetroTabPage();
             this.metroTabPage3 = new MetroFramework.Controls.MetroTabPage();
             this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
+            this.machineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage1.SuspendLayout();
+            this.metroTabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +55,7 @@
             this.metroTabControl1.ItemSize = new System.Drawing.Size(200, 34);
             this.metroTabControl1.Location = new System.Drawing.Point(3, 3);
             this.metroTabControl1.Name = "metroTabControl1";
-            this.metroTabControl1.SelectedIndex = 0;
+            this.metroTabControl1.SelectedIndex = 1;
             this.metroTabControl1.Size = new System.Drawing.Size(867, 461);
             this.metroTabControl1.TabIndex = 0;
             this.metroTabControl1.UseSelectable = true;
@@ -63,7 +65,7 @@
             // 
             this.metroTabPage1.Controls.Add(this.startButton);
             this.metroTabPage1.Controls.Add(this.refreshButton);
-            this.metroTabPage1.Controls.Add(this.machineListView);
+            this.metroTabPage1.Controls.Add(this.onlineMachineListView);
             this.metroTabPage1.HorizontalScrollbarBarColor = true;
             this.metroTabPage1.HorizontalScrollbarHighlightOnWheel = false;
             this.metroTabPage1.HorizontalScrollbarSize = 10;
@@ -98,26 +100,27 @@
             this.refreshButton.UseSelectable = true;
             this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
             // 
-            // machineListView
+            // onlineMachineListView
             // 
-            this.machineListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.onlineMachineListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.machineListView.CheckBoxes = true;
-            this.machineListView.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.machineListView.FullRowSelect = true;
-            this.machineListView.Location = new System.Drawing.Point(22, 26);
-            this.machineListView.Name = "machineListView";
-            this.machineListView.OwnerDraw = true;
-            this.machineListView.Size = new System.Drawing.Size(810, 333);
-            this.machineListView.Style = MetroFramework.MetroColorStyle.Blue;
-            this.machineListView.TabIndex = 2;
-            this.machineListView.UseCompatibleStateImageBehavior = false;
-            this.machineListView.UseSelectable = true;
-            this.machineListView.View = System.Windows.Forms.View.Details;
+            this.onlineMachineListView.CheckBoxes = true;
+            this.onlineMachineListView.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.onlineMachineListView.FullRowSelect = true;
+            this.onlineMachineListView.Location = new System.Drawing.Point(22, 26);
+            this.onlineMachineListView.Name = "onlineMachineListView";
+            this.onlineMachineListView.OwnerDraw = true;
+            this.onlineMachineListView.Size = new System.Drawing.Size(810, 333);
+            this.onlineMachineListView.Style = MetroFramework.MetroColorStyle.Blue;
+            this.onlineMachineListView.TabIndex = 1;
+            this.onlineMachineListView.UseCompatibleStateImageBehavior = false;
+            this.onlineMachineListView.UseSelectable = true;
+            this.onlineMachineListView.View = System.Windows.Forms.View.Details;
             // 
             // metroTabPage2
             // 
+            this.metroTabPage2.Controls.Add(this.machineListView);
             this.metroTabPage2.HorizontalScrollbarBarColor = true;
             this.metroTabPage2.HorizontalScrollbarHighlightOnWheel = false;
             this.metroTabPage2.HorizontalScrollbarSize = 10;
@@ -149,6 +152,23 @@
             this.metroStyleManager1.Owner = this;
             this.metroStyleManager1.Style = MetroFramework.MetroColorStyle.Orange;
             // 
+            // machineListView
+            // 
+            this.machineListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.machineListView.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.machineListView.FullRowSelect = true;
+            this.machineListView.Location = new System.Drawing.Point(22, 26);
+            this.machineListView.Name = "machineListView";
+            this.machineListView.OwnerDraw = true;
+            this.machineListView.Size = new System.Drawing.Size(810, 333);
+            this.machineListView.Style = MetroFramework.MetroColorStyle.Blue;
+            this.machineListView.TabIndex = 3;
+            this.machineListView.UseCompatibleStateImageBehavior = false;
+            this.machineListView.UseSelectable = true;
+            this.machineListView.View = System.Windows.Forms.View.Details;
+            // 
             // TabControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -161,6 +181,7 @@
             this.Load += new System.EventHandler(this.TabControl_Load);
             this.metroTabControl1.ResumeLayout(false);
             this.metroTabPage1.ResumeLayout(false);
+            this.metroTabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).EndInit();
             this.ResumeLayout(false);
 
@@ -172,9 +193,10 @@
         private MetroFramework.Controls.MetroTabPage metroTabPage1;
         private MetroFramework.Controls.MetroTabPage metroTabPage2;
         private MetroFramework.Controls.MetroTabPage metroTabPage3;
-        private MetroFramework.Controls.MetroListView machineListView;
+        private MetroFramework.Controls.MetroListView onlineMachineListView;
         private MetroFramework.Controls.MetroButton startButton;
         private MetroFramework.Controls.MetroButton refreshButton;
         private MetroFramework.Components.MetroStyleManager metroStyleManager1;
+        private MetroFramework.Controls.MetroListView machineListView;
     }
 }

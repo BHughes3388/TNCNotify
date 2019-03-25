@@ -26,11 +26,20 @@ namespace TNCNotify
 
         private async void Login(string username, string password)
         {
-            //User myUser = await User.LoginAsync(username, password);
-            Main mainForm = (Main)this.ParentForm;
-            mainForm.RemoveSignIn();
+            User myUser = await User.LoginAsync(username, password);
 
-            //Console.WriteLine(myUser.UserName + " logged in");
+            if (myUser != null)
+            {
+                Main mainForm = (Main)this.ParentForm;
+                mainForm.RemoveSignIn();
+
+                Console.WriteLine(myUser.UserName + " logged in");
+            }
+            else
+            {
+                Console.WriteLine("There was a problem logging in");
+            }
+           
 
         }
 

@@ -656,7 +656,7 @@ namespace TNCNotify
             machine.ActiveProgram = machineDict["NameActiveProgram"];
             machine.BlockNr = machineDict["BlockNr"];
             machine.ExecutionMode = machineDict["ExecutionMode"];
-
+            
             machine.ToolName = machineDict["ToolName"];
             machine.ToolNr = machineDict["ToolNr"];
             machine.ToolIndex = machineDict["ToolIndex"];
@@ -671,7 +671,7 @@ namespace TNCNotify
             machine.ToolCurTime = machineDict["ToolCurTime"];
 
             machine.Connected = true;
-
+            
 
             Console.WriteLine("Tool Replacement Nr : {0}", machine.machineid);
             if (machine != null)

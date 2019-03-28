@@ -291,25 +291,181 @@ namespace TNCNotify
 
         }
 
-        public void TestGetMC(String strRequest)
+        public string GetMachineSerialNumber()
+        {
+            /*
+            Machine serial Nr. : 107.xx.00.xxx
+            MP 4210.5  : +107       ;1st position
+            MP 4210.6  : +11        ;2nd position
+            MP 4210.7  : +0         ;3rd position
+            MP 4210.8  : +34        ;4th position
+            */
+
+            string serialNumber = "";
+            serialNumber += GetMachineParameter("4210.5").Trim(new Char[] { '+' });
+            serialNumber += ".";
+            serialNumber += GetMachineParameter("4210.6").Trim(new Char[] { '+' });
+            serialNumber += ".00.";
+            if (GetMachineParameter("4210.8").Length < 4)
+            {
+                serialNumber += "0";
+            }
+            serialNumber += GetMachineParameter("4210.8").Trim(new Char[] { '+' });
+
+            return serialNumber;
+        }
+
+        public int ReadByteMarker(int dwOfs)
+        {
+            //needs area PLCDEBUG, 
+            // if already used by other instances TNC may refuse access
+            // one could try to delay and retry 2x or 3x times in case the other instance releases it
+            int nErr;
+            int dwPLCAddress = SuperCom.PLSV2.Heidenhain.HN_SwapDWord(SysPars.Values.MarkerStart + dwOfs);
+            int dwLen = 1;
+            byte[] cBuffer = new byte[dwLen];
+
+            nErr = SuperCom.PLSV2.Heidenhain.HN_ReadMemory(CommId,
+                                                           dwPLCAddress,
+                                                           cBuffer,
+                                                           ref dwLen);
+
+            Console.Out.WriteLine("Read Marker at {0}, ", dwOfs);
+
+            if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
+            {
+                Console.Out.WriteLine(" Value={0}", cBuffer[0]);
+                return cBuffer[0];
+            }
+            else
+            {
+                Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
+            }
+
+            return 0;
+        }
+
+        public long ReadDWord(int dwOfs)
+        {
+            //needs area PLCDEBUG, if already used by other instances TNC may refuse access
+            int nErr;
+            int dwPLCAddress = SuperCom.PLSV2.Heidenhain.HN_SwapDWord(SysPars.Values.WordStart + dwOfs);
+            int dwLen = 4;
+            byte[] cBuffer = new byte[dwLen];
+
+            nErr = SuperCom.PLSV2.Heidenhain.HN_ReadMemory(CommId,
+                                                           dwPLCAddress,
+                                                           cBuffer,
+                                                           ref dwLen);
+
+            Console.Out.WriteLine("Read DWord at {0}, total bytes {1}, ", dwOfs, dwLen);
+
+            if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
+            {
+                System.UInt32[] a = ByteArrayToDWordArray(cBuffer, dwLen);
+
+                Console.Out.WriteLine(" Value={0}", (uint)SuperCom.PLSV2.Heidenhain.HN_SwapDWord((int)a[0]));
+                return SuperCom.PLSV2.Heidenhain.HN_SwapDWord((int)a[0]);
+            }
+            else
+            {
+                Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
+            }
+
+            return 0;
+        }
+
+        public int ReadWord(int dwOfs)
+        {
+            //needs area PLCDEBUG, if already used by other instances TNC may refuse access
+            int nErr;
+            int dwPLCAddress = SuperCom.PLSV2.Heidenhain.HN_SwapDWord(SysPars.Values.WordStart + dwOfs);
+            int dwLen = 2;
+            byte[] cBuffer = new byte[dwLen];
+
+            nErr = SuperCom.PLSV2.Heidenhain.HN_ReadMemory(CommId,
+                                                           dwPLCAddress,
+                                                           cBuffer,
+                                                           ref dwLen);
+
+            Console.Out.WriteLine("Read Word at {0}, total bytes {1}, ", dwOfs, dwLen);
+
+            if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
+            {
+                
+                System.UInt16[] a = ByteArrayToWordArray(cBuffer, dwLen);
+                Console.Out.WriteLine(" Value={0}", (uint)SuperCom.PLSV2.Heidenhain.HN_SwapDWord((int)a[0]));
+                Console.Out.WriteLine(" Value={0}", a[0]);
+                return a[0];
+            }
+            else
+            {
+                Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
+            }
+
+            return 0;
+        }
+
+        public System.UInt32[] ByteArrayToDWordArray(byte[] aSource, int nByteCount)
+        {
+            System.UInt32[] aDest = new System.UInt32[nByteCount / 4];
+            Buffer.BlockCopy(aSource, 0, aDest, 0, nByteCount);
+            return aDest;
+        }
+
+        public System.UInt16[] ByteArrayToWordArray(byte[] aSource, int nByteCount)
+        {
+            System.UInt16[] aDest = new System.UInt16[nByteCount / 2];
+            Buffer.BlockCopy(aSource, 0, aDest, 0, nByteCount);
+            return aDest;
+        }
+
+        public void test()
         {
             int nErr;
 
-            // requires access rights to AREA_INSPECT
+            int dwLen = 2;
+            byte[] Value = new byte[dwLen]; 
+            int dwOfs = 7379;
+            int dwMemStart = SuperCom.PLSV2.Heidenhain.HN_SwapDWord(SysPars.Values.WordStart + dwOfs);
 
-            Console.Out.WriteLine("");
-            Console.Out.WriteLine(" Get Machine Parameters   ");
+            nErr = SuperCom.PLSV2.Heidenhain.HN_ReadMemory(CommId, dwMemStart, Value, ref dwLen);
+
+
+            Console.Out.WriteLine("Read Word at {0}, total bytes {1}, ", dwOfs, dwLen);
+
+            if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
+            {
+
+                System.UInt16[] a = ByteArrayToWordArray(Value, dwLen);
+
+                Console.Out.WriteLine(" Value={0}", (ushort)SuperCom.PLSV2.Heidenhain.HN_SwapWord((short)a[0]));
+                Console.WriteLine("value={0}",Value[0]);
+                Console.WriteLine(a[0]);
+                Console.WriteLine(Value[0]);
+
+            }
+            else
+            {
+                Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
+            }
+
+        }
+
+        public string GetMachineParameter(String strRequest)
+        {
+            int nErr;
 
             String strParamStringValues;
             strParamStringValues = "";
 
             nErr = SuperCom.PLSV2.Heidenhain.HN_GetMachineParameters(CommId, strRequest, ref strParamStringValues);
+            string s = SuperCom.GetStrVal(strParamStringValues, strRequest);
             if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
-                Console.Out.WriteLine(" OK, [{0}], [{1}]", strRequest, strParamStringValues);
+                return s;//Console.Out.WriteLine(" OK, [{0}], [{1}], {2}", strRequest, strParamStringValues, s);
             else
-                Console.Out.WriteLine(" failed Err={0}, TNC ErrCode={1}", nErr, HNGetLastError());
+                return null;//Console.Out.WriteLine(" failed Err={0}, TNC ErrCode={1}", nErr, HNGetLastError());
 
-            Console.Out.WriteLine("");
         }
 
         public String HNGetLastError()
@@ -465,15 +621,14 @@ namespace TNCNotify
             SCom.SysPars = new SuperCom.PLSV2.Heidenhain.HN_SYSTEM_PARAMS(SCom.CommId); // needs area INSPECT
 
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_DATA);
+            SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
 
             errorReset = true;
             SetTimer(SCom);
             Console.WriteLine("started connection");
 
-            //SCom.GetTNCVersion();
-            //SCom.getTNCStatus();
-            //Console.WriteLine("programStatus: {0}", programStatus);
-
+            //string palletNr = string.Format("{0}", SCom.ReadWord(38));
+            //Console.WriteLine("Pallet: {0}", palletNr);
         }
 
         private void SetTimer(MYSCOM SCom)
@@ -550,7 +705,7 @@ namespace TNCNotify
                 new Dictionary<string, string>(),
                 new Dictionary<string, string>(),
                 new Dictionary<string, string>(),
-                //new Dictionary<string, string>()
+                new Dictionary<string, string>()
             };
 
             //Tool Name
@@ -585,23 +740,23 @@ namespace TNCNotify
             matrix[9].Add("Path", "\\PLC\\memory\\S\\25");
             matrix[9].Add("Key", "MachineName");
             //Pallet Number
-            //matrix[10].Add("Path", "\\PLC\\memory\\S\\2");
-            //matrix[10].Add("Key", "PalletNr");
+            matrix[10].Add("Path", "\\PLC\\memory\\B\\38");
+            matrix[10].Add("Key", "PalletNr");
             //NC Spindle Override
-            matrix[10].Add("Path", "\\PLC\\memory\\W\\492");
-            matrix[10].Add("Key", "NCSpindleOverride");
+            matrix[11].Add("Path", "\\PLC\\memory\\W\\492");
+            matrix[11].Add("Key", "NCSpindleOverride");
             //NC Feed Override
-            matrix[11].Add("Path", "\\PLC\\memory\\W\\494");
-            matrix[11].Add("Key", "NCFeedOverride");
+            matrix[12].Add("Path", "\\PLC\\memory\\W\\494");
+            matrix[12].Add("Key", "NCFeedOverride");
             //Actual Spindle Override
-            matrix[12].Add("Path", "\\PLC\\memory\\W\\764");
-            matrix[12].Add("Key", "PLCSpindleOverride");
+            matrix[13].Add("Path", "\\PLC\\memory\\W\\764");
+            matrix[13].Add("Key", "PLCSpindleOverride");
             //Actual Feed Override
-            matrix[13].Add("Path", "\\PLC\\memory\\W\\766");
-            matrix[13].Add("Key", "PLCFeedOverride");
+            matrix[14].Add("Path", "\\PLC\\memory\\W\\766");
+            matrix[14].Add("Key", "PLCFeedOverride");
             //Error Operand
-            matrix[14].Add("Path", "\\PLC\\memory\\M\\4227");
-            matrix[14].Add("Key", "PLCError");
+            matrix[15].Add("Path", "\\PLC\\memory\\M\\4227");
+            matrix[15].Add("Key", "PLCError");
 
             foreach (Dictionary<string, string> dict in matrix)
             {
@@ -615,6 +770,7 @@ namespace TNCNotify
 
             }
 
+            machineDict["PalletNr"] = string.Format("{0}", SCom.ReadWord(38));
 
             foreach (KeyValuePair<string, string> kvp in machineDict)
             {
@@ -627,6 +783,7 @@ namespace TNCNotify
 
             //Check If Machine Has Error
             CheckForErrors(machineDict["PLCError"], SCom);
+            //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
 
             //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
         }
@@ -650,7 +807,7 @@ namespace TNCNotify
             machine.NCFeedOveride = machineDict["NCFeedOverride"];
             machine.PLCSpindleOverride = machineDict["PLCSpindleOverride"];
             machine.PLCFeedOverride = machineDict["PLCFeedOverride"];
-            //machine.PAL = PalNrFromString(machineDict["PalletNr"]);
+            machine.PAL = machineDict["PalletNr"];
             machine.ProgramStatus = machineDict["ProgramStatus"];
             machine.SelectedProgram = machineDict["NameSelectedProgram"];
             machine.ActiveProgram = machineDict["NameActiveProgram"];

@@ -35,9 +35,9 @@
             this.refreshButton = new MetroFramework.Controls.MetroButton();
             this.onlineMachineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabPage2 = new MetroFramework.Controls.MetroTabPage();
+            this.machineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabPage3 = new MetroFramework.Controls.MetroTabPage();
             this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
-            this.machineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage1.SuspendLayout();
             this.metroTabPage2.SuspendLayout();
@@ -55,7 +55,7 @@
             this.metroTabControl1.ItemSize = new System.Drawing.Size(200, 34);
             this.metroTabControl1.Location = new System.Drawing.Point(3, 3);
             this.metroTabControl1.Name = "metroTabControl1";
-            this.metroTabControl1.SelectedIndex = 1;
+            this.metroTabControl1.SelectedIndex = 0;
             this.metroTabControl1.Size = new System.Drawing.Size(867, 461);
             this.metroTabControl1.TabIndex = 0;
             this.metroTabControl1.UseSelectable = true;
@@ -133,6 +133,23 @@
             this.metroTabPage2.VerticalScrollbarHighlightOnWheel = false;
             this.metroTabPage2.VerticalScrollbarSize = 10;
             // 
+            // machineListView
+            // 
+            this.machineListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.machineListView.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.machineListView.FullRowSelect = true;
+            this.machineListView.Location = new System.Drawing.Point(22, 26);
+            this.machineListView.Name = "machineListView";
+            this.machineListView.OwnerDraw = true;
+            this.machineListView.Size = new System.Drawing.Size(810, 333);
+            this.machineListView.Style = MetroFramework.MetroColorStyle.Blue;
+            this.machineListView.TabIndex = 3;
+            this.machineListView.UseCompatibleStateImageBehavior = false;
+            this.machineListView.UseSelectable = true;
+            this.machineListView.View = System.Windows.Forms.View.Details;
+            // 
             // metroTabPage3
             // 
             this.metroTabPage3.HorizontalScrollbarBarColor = true;
@@ -151,23 +168,6 @@
             // 
             this.metroStyleManager1.Owner = this;
             this.metroStyleManager1.Style = MetroFramework.MetroColorStyle.Orange;
-            // 
-            // machineListView
-            // 
-            this.machineListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.machineListView.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.machineListView.FullRowSelect = true;
-            this.machineListView.Location = new System.Drawing.Point(22, 26);
-            this.machineListView.Name = "machineListView";
-            this.machineListView.OwnerDraw = true;
-            this.machineListView.Size = new System.Drawing.Size(810, 333);
-            this.machineListView.Style = MetroFramework.MetroColorStyle.Blue;
-            this.machineListView.TabIndex = 3;
-            this.machineListView.UseCompatibleStateImageBehavior = false;
-            this.machineListView.UseSelectable = true;
-            this.machineListView.View = System.Windows.Forms.View.Details;
             // 
             // TabControl
             // 

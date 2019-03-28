@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using Kinvey;
 
 
@@ -24,7 +23,7 @@ namespace TNCNotify
         public TabControl()
         {
             InitializeComponent();
-
+ 
             GetMachines();
         }
 
@@ -40,7 +39,6 @@ namespace TNCNotify
             List<string> machineids = user.Attributes["Machines"].ToObject<List<string>>();
             Console.WriteLine("machine ids: " + machineids);
 
-
             KinveyNetworking network = new KinveyNetworking();
 
             machines = await network.GetMachines(machineids);
@@ -49,7 +47,7 @@ namespace TNCNotify
             PopulateMchineListView(machines);
         }
 
-        private async void PopulateOnlineListView(List<Machine> machines)
+        private void PopulateOnlineListView(List<Machine> machines)
         {
 
             onlineMachines = new List<Machine>();
@@ -82,7 +80,7 @@ namespace TNCNotify
             }
         }
 
-        private async void PopulateMchineListView(List<Machine> machines)
+        private void PopulateMchineListView(List<Machine> machines)
         {
 
             machineListView.Clear();
@@ -108,7 +106,6 @@ namespace TNCNotify
 
             if (!success)
             {
-                //throw new Exception("Failed to connect.");
                 //Console.WriteLine("failed to connect to: " + hostUri);
                 return false;
             }
@@ -118,18 +115,6 @@ namespace TNCNotify
                 return true;
             }
 
-            /*
-            try
-            {
-                using (var client = new TcpClient(hostUri, portNumber))
-                    return true;
-            }
-            catch (SocketException ex)
-            {
-                //MessageBox.Show("Error pinging host:'" + hostUri + ":" + portNumber.ToString() + "'");
-                return false;
-            }
-            */
         }
 
         private void refreshButton_Click(object sender, EventArgs e)

@@ -136,6 +136,8 @@ namespace TNCNotify
                 machineCom.StartMachine(machine, index);
 
             }
+
+            startButton.Text = "Running";
         }
     }
 }

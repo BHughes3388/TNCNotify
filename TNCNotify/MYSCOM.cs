@@ -782,7 +782,8 @@ namespace TNCNotify
             UpdateMachine(machineDict);
 
             //Check If Machine Has Error
-            CheckForErrors(machineDict["PLCError"], SCom);
+            //CheckForErrors(machineDict["PLCError"], SCom);
+            GetFirstError(SCom);
             //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
 
             //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
@@ -839,7 +840,7 @@ namespace TNCNotify
 
         }
 
-        private void CheckForErrors(string PLCError, MYSCOM SCom)
+        private void CheckForErrors1(string PLCError, MYSCOM SCom)
         {
             if (PLCError.Equals("TRUE"))
             {
@@ -859,15 +860,32 @@ namespace TNCNotify
             }
         }
 
+        private void CheckForErrors(string PLCError, MYSCOM SCom)
+        {
+
+            if (errorReset)
+            {
+                GetFirstError(SCom);
+                Console.WriteLine("New Error");
+            }
+
+        }
+
         private void GetFirstError(MYSCOM SCom)
         {
             Error NewError = SCom.GetFirstError();
 
-            if (NewError != null)
+            if (NewError != null && errorReset)
             {
+                errorReset = false;
+
                 KinveyNetworking network = new KinveyNetworking();
                 network.SaveError(NewError, machine);
                 GetNextError(SCom);
+            }
+            else
+            {
+                errorReset = true;
             }
         }
 

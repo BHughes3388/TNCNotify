@@ -566,21 +566,29 @@ namespace TNCNotify
     public class MachineCom
     {
         public Machine machine;
+        public int index;
+        public MYSCOM com;
 
         private System.Timers.Timer aTimer;
 
         private bool errorReset;
 
-        public void StartMachine(Machine myMachine, int index)
+        public void StartMachine(Machine myMachine, int myIndex)
         {
-            machine = myMachine;
-            CreateConnection(index, myMachine.IP, "19000");
+            if (machine == null)
+                machine = myMachine;
+
+            if (index <= 0)
+                index = myIndex;
+
+            CreateConnection(index, machine.IP, "19000");
         }
 
         public void CreateConnection(int Com, string ip, string port)
         {
 
             MYSCOM SCom = new MYSCOM(Com); //<<< Set COM channel here <<<
+            com = SCom;
 
             SCom.ComType = ComType.COMTYPE_WINSOCK_CLIENT;
             SCom.PortOpen = true;
@@ -631,6 +639,18 @@ namespace TNCNotify
             //Console.WriteLine("Pallet: {0}", palletNr);
         }
 
+        public void closeConnection()
+        {
+            if (com.Connect)
+            {
+                com.Connect = false;
+                aTimer.Enabled = false;
+                com.PortOpen = false;
+
+            }
+
+        }
+
         private void SetTimer(MYSCOM SCom)
         {
             // Create a timer with a two second interval.
@@ -645,6 +665,13 @@ namespace TNCNotify
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e, MYSCOM SCom)
         {
+
+            if (!SCom.Connected)
+            {
+                closeConnection();
+
+                StartMachine(null, 0);
+            }
 
 
             /*
@@ -774,7 +801,7 @@ namespace TNCNotify
 
             foreach (KeyValuePair<string, string> kvp in machineDict)
             {
-                Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value);
+                //Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value);
             }
             
 
@@ -875,6 +902,11 @@ namespace TNCNotify
         {
             Error NewError = SCom.GetFirstError();
 
+            if (NewError == null)
+            {
+                errorReset = true;
+            }
+
             if (NewError != null && errorReset)
             {
                 errorReset = false;
@@ -883,10 +915,7 @@ namespace TNCNotify
                 network.SaveError(NewError, machine);
                 GetNextError(SCom);
             }
-            else
-            {
-                errorReset = true;
-            }
+           
         }
 
         private void GetNextError(MYSCOM SCom)

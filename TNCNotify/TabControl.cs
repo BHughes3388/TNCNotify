@@ -18,6 +18,8 @@ namespace TNCNotify
     {
         List<Machine> machines;
         List<Machine> onlineMachines;
+        List<MachineCom> machineComs;
+        bool isRunning= false;
 
 
         public TabControl()
@@ -125,19 +127,39 @@ namespace TNCNotify
 
         private void startButton_Click(object sender, EventArgs e)
         {
-
-            foreach (int index in onlineMachineListView.CheckedIndices)      
+            if (!isRunning)
             {
-                MachineCom machineCom = new MachineCom();
+                machineComs = new List<MachineCom>();
 
-                Machine machine = onlineMachines[index];
-                Console.WriteLine("Check Indexs: " + machine.MachineName);
+                foreach (int index in onlineMachineListView.CheckedIndices)
+                {
+                    MachineCom machineCom = new MachineCom();
 
-                machineCom.StartMachine(machine, index);
+                    Machine machine = onlineMachines[index];
+                    Console.WriteLine("Check Indexs: " + machine.MachineName);
 
+                    machineCom.StartMachine(machine, index);
+
+                    machineComs.Add(machineCom);
+                }
+
+                isRunning = true;
             }
+            else
+            {
 
-            startButton.Text = "Running";
+                foreach (MachineCom machineCom in machineComs)
+                {
+                    machineCom.closeConnection();
+                   
+                }
+
+                machineComs = null;
+
+                isRunning = false;
+            }
+            
+            startButton.Text = isRunning ? "Stop" : "Start";
         }
     }
 }

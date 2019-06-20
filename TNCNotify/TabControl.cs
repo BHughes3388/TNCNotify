@@ -18,6 +18,7 @@ namespace TNCNotify
     {
         List<Machine> machines;
         List<Machine> onlineMachines;
+        User[] users;
         List<MachineCom> machineComs;
         bool isRunning= false;
 
@@ -34,6 +35,16 @@ namespace TNCNotify
             this.Dock = DockStyle.Fill;
         }
 
+        private void metroTabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("did select index {0}", metroTabControl1.SelectedTab);
+            if (metroTabControl1.SelectedIndex == 2)
+            {
+                GetUsers();
+                Console.WriteLine("Get Users");
+            }
+        }
+
         private async void GetMachines()
         {
             User user = Client.SharedClient.ActiveUser;
@@ -47,6 +58,15 @@ namespace TNCNotify
 
             PopulateOnlineListView(machines);
             PopulateMchineListView(machines);
+        }
+
+        private async void GetUsers()
+        {
+            KinveyNetworking network = new KinveyNetworking();
+
+            users = await network.GetUsers();
+
+            Console.WriteLine("Users recieved: {0}", users);
         }
 
         private void PopulateOnlineListView(List<Machine> machines)

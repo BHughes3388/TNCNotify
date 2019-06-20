@@ -37,10 +37,12 @@
             this.metroTabPage2 = new MetroFramework.Controls.MetroTabPage();
             this.machineListView = new MetroFramework.Controls.MetroListView();
             this.metroTabPage3 = new MetroFramework.Controls.MetroTabPage();
+            this.usersListView = new MetroFramework.Controls.MetroListView();
             this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage1.SuspendLayout();
             this.metroTabPage2.SuspendLayout();
+            this.metroTabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -60,6 +62,7 @@
             this.metroTabControl1.TabIndex = 0;
             this.metroTabControl1.UseSelectable = true;
             this.metroTabControl1.UseStyleColors = true;
+            this.metroTabControl1.SelectedIndexChanged += new System.EventHandler(this.metroTabControl1_SelectedIndexChanged);
             // 
             // metroTabPage1
             // 
@@ -152,6 +155,7 @@
             // 
             // metroTabPage3
             // 
+            this.metroTabPage3.Controls.Add(this.usersListView);
             this.metroTabPage3.HorizontalScrollbarBarColor = true;
             this.metroTabPage3.HorizontalScrollbarHighlightOnWheel = false;
             this.metroTabPage3.HorizontalScrollbarSize = 10;
@@ -163,6 +167,23 @@
             this.metroTabPage3.VerticalScrollbarBarColor = true;
             this.metroTabPage3.VerticalScrollbarHighlightOnWheel = false;
             this.metroTabPage3.VerticalScrollbarSize = 10;
+            // 
+            // usersListView
+            // 
+            this.usersListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.usersListView.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.usersListView.FullRowSelect = true;
+            this.usersListView.Location = new System.Drawing.Point(22, 26);
+            this.usersListView.Name = "usersListView";
+            this.usersListView.OwnerDraw = true;
+            this.usersListView.Size = new System.Drawing.Size(810, 333);
+            this.usersListView.Style = MetroFramework.MetroColorStyle.Blue;
+            this.usersListView.TabIndex = 4;
+            this.usersListView.UseCompatibleStateImageBehavior = false;
+            this.usersListView.UseSelectable = true;
+            this.usersListView.View = System.Windows.Forms.View.Details;
             // 
             // metroStyleManager1
             // 
@@ -182,6 +203,7 @@
             this.metroTabControl1.ResumeLayout(false);
             this.metroTabPage1.ResumeLayout(false);
             this.metroTabPage2.ResumeLayout(false);
+            this.metroTabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).EndInit();
             this.ResumeLayout(false);
 
@@ -198,5 +220,6 @@
         private MetroFramework.Controls.MetroButton refreshButton;
         private MetroFramework.Components.MetroStyleManager metroStyleManager1;
         private MetroFramework.Controls.MetroListView machineListView;
+        private MetroFramework.Controls.MetroListView usersListView;
     }
 }

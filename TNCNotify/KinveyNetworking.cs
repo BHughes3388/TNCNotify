@@ -141,6 +141,32 @@ namespace TNCNotify
            
         }
 
+        public async Task<User[]> GetUsers()
+        {
+
+            var criteria = new UserDiscovery
+            {
+               
+            };
+
+            try
+            {
+                User[] loopupUsers = await Client.SharedClient.ActiveUser.LookupAsync(criteria);
+                Console.WriteLine("Active User : {0}", Client.SharedClient.ActiveUser.UserName);
+
+                Console.WriteLine("Users : {0}", loopupUsers);
+                return loopupUsers;
+            }
+            catch (KinveyException ke)
+            {
+                // handle error
+                Console.WriteLine("Get Users Exception: " + ke);
+                return null;
+            }
+
+
+        }
+
         public async void UpdateMachine(Machine machine)
         {
             DataStore<Machine> dataStore = DataStore<Machine>.Collection("Machines", DataStoreType.NETWORK);

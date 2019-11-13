@@ -144,18 +144,18 @@ namespace TNCNotify
         public async Task<User[]> GetUsers()
         {
 
-            var criteria = new UserDiscovery
-            {
-               
-            };
+            UserDiscovery userDis = new UserDiscovery();
+            userDis.Email = "bhughes3388@gmail.com";
+
+            Console.WriteLine("critera: {0}", userDis.getCriteria().First());
 
             try
             {
-                User[] loopupUsers = await Client.SharedClient.ActiveUser.LookupAsync(criteria);
+                User[] lookupUsers = await Client.SharedClient.ActiveUser.LookupAsync(userDis);
                 Console.WriteLine("Active User : {0}", Client.SharedClient.ActiveUser.UserName);
 
-                Console.WriteLine("Users : {0}", loopupUsers);
-                return loopupUsers;
+                Console.WriteLine("Users : {0}", userDis.getCriteria().First());
+                return lookupUsers;
             }
             catch (KinveyException ke)
             {

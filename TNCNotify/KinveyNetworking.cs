@@ -149,12 +149,15 @@ namespace TNCNotify
 
             Console.WriteLine("critera: {0}", userDis.getCriteria().First());
 
+            var criteria = new UserDiscovery
+            {
+                Email = "bill@hyeprecision.com"
+            };
+
             try
             {
-                User[] lookupUsers = await Client.SharedClient.ActiveUser.LookupAsync(userDis);
-                Console.WriteLine("Active User : {0}", Client.SharedClient.ActiveUser.UserName);
-
-                Console.WriteLine("Users : {0}", userDis.getCriteria().First());
+                User[] lookupUsers = await Client.SharedClient.ActiveUser.LookupAsync(criteria);
+                Console.WriteLine("Users : {0}", lookupUsers.First());
                 return lookupUsers;
             }
             catch (KinveyException ke)

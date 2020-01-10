@@ -419,7 +419,7 @@ namespace TNCNotify
             Buffer.BlockCopy(aSource, 0, aDest, 0, nByteCount);
             return aDest;
         }
-
+        /*
         public void test()
         {
             int nErr;
@@ -451,7 +451,7 @@ namespace TNCNotify
             }
 
         }
-
+        */
         public string GetMachineParameter(String strRequest)
         {
             int nErr;
@@ -632,11 +632,9 @@ namespace TNCNotify
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
 
             errorReset = true;
-            SetTimer(SCom);
+            SetTimer();
             Console.WriteLine("started connection");
 
-            //string palletNr = string.Format("{0}", SCom.ReadWord(38));
-            //Console.WriteLine("Pallet: {0}", palletNr);
         }
 
         public void closeConnection()
@@ -651,256 +649,86 @@ namespace TNCNotify
 
         }
 
-        private void SetTimer(MYSCOM SCom)
+        private void SetTimer()
         {
             // Create a timer with a two second interval.
             aTimer = new System.Timers.Timer(60000);
             // Hook up the Elapsed event for the timer. 
-            aTimer.Elapsed += (sender, e) => OnTimedEvent(sender, e, SCom);
+            aTimer.Elapsed += (sender, e) => UpdateMachine(sender, e);
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
 
-            OnTimedEvent(null, null, SCom);
+            UpdateMachine(null, null);
         }
-
-        private void OnTimedEvent(Object source, ElapsedEventArgs e, MYSCOM SCom)
+       
+        private string DataValueForPath(string path)
         {
+            String sRetValue = "";
+            byte cType = 32; // space
 
-            if (!SCom.Connected)
+            if (SuperCom.PLSV2.Heidenhain.HN_ERR_NONE == com.DataGetValue(path, ref cType, ref sRetValue))
             {
-                closeConnection();
-
-                StartMachine(null, 0);
+                return sRetValue;
             }
 
-
-            /*
-             * \\PLC\\memory\\S\\10 PGM name
-             * \\PLC\\memory\\S\\25 Machine Name
-             * \\PLC\\memory\\S\\35 Tool Name
-             * \\PLC\\memory\\W\\264 tool number
-             * \\PLC\\memory\\W\\492 percentage spindle override NC to PLC
-             * \\PLC\\memory\\W\\494 percentage feed override NC to PLC
-             * \\PLC\\memory\\W\\764 percentage spindle override PLC to NC
-             * \\PLC\\memory\\W\\766 percentage feed override PLC to NC
-             * \\TABLE\\'TNC:\\TNCNotify.TAB'\\NR\\0\\PAL Current Pallet Number
-             * \\PLC\\memory\\M\\4227 PLC error operand 
-             */
-            
-            //Dictionary To Hold New Machine Data
-            Dictionary<string, string> machineDict = new Dictionary<string, string>();
-
-            //Program Status
-            string programStatus = SCom.GetProgramStatus();
-            Console.WriteLine("programStatus: {0}", programStatus);
-            machineDict["ProgramStatus"] = programStatus;
-
-
-            
-            //Program Execution Point
-            Dictionary<string, string> executionPoint = SCom.GetExecutionPoint();
-            machineDict["NameSelectedProgram"] = executionPoint["NameSelectedProgram"];
-            machineDict["NameActiveProgram"] = executionPoint["NameActiveProgram"];
-            machineDict["BlockNr"] = executionPoint["BlockNr"];
-
-            //Execution Mode
-            string executionMode = SCom.GetExecutionMode();
-            machineDict["ExecutionMode"] = executionMode;
-            
-            //Tool
-            Dictionary<string, string> tool = SCom.GetTool();
-            machineDict["ToolNr"] = tool["ToolNr"];
-            machineDict["ToolIndex"] = tool["ToolIndex"];
-            machineDict["ToolAxis"] = tool["ToolAxis"];
-            machineDict["ToolLen"] = tool["ToolLen"];
-            machineDict["ToolRad"] = tool["ToolRad"];
-
-            Dictionary<string, string>[] matrix = new Dictionary<string, string>[]
-            {
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>()
-            };
-
-            //Tool Name
-            string toolNr = tool["ToolNr"];
-            matrix[0].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\NAME");
-            matrix[0].Add("Key", "ToolName");
-            //Tool Length
-            matrix[1].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\L");
-            matrix[1].Add("Key", "ToolLen");
-            //Tool Radius
-            matrix[2].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\R");
-            matrix[2].Add("Key", "ToolRad");
-            //Tool Radius2
-            matrix[3].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\R2");
-            matrix[3].Add("Key", "ToolRad2");
-            //Tool length Oversize
-            matrix[4].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\DL");
-            matrix[4].Add("Key", "ToolLenOversize");
-            //Tool Radius Oversize
-            matrix[5].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\DR");
-            matrix[5].Add("Key", "ToolRadOversize");
-            //Tool Replacement Tool
-            matrix[6].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\RT");
-            matrix[6].Add("Key", "ToolReplacmentToolNr");
-            //Tool Time2
-            matrix[7].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\TIME2");
-            matrix[7].Add("Key", "ToolTime2");
-            //Tool Current Time
-            matrix[8].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\CUR.TIME");
-            matrix[8].Add("Key", "ToolCurTime");
-            //Machine Name
-            matrix[9].Add("Path", "\\PLC\\memory\\S\\25");
-            matrix[9].Add("Key", "MachineName");
-            //Pallet Number
-            matrix[10].Add("Path", "\\PLC\\memory\\B\\38");
-            matrix[10].Add("Key", "PalletNr");
-            //NC Spindle Override
-            matrix[11].Add("Path", "\\PLC\\memory\\W\\492");
-            matrix[11].Add("Key", "NCSpindleOverride");
-            //NC Feed Override
-            matrix[12].Add("Path", "\\PLC\\memory\\W\\494");
-            matrix[12].Add("Key", "NCFeedOverride");
-            //Actual Spindle Override
-            matrix[13].Add("Path", "\\PLC\\memory\\W\\764");
-            matrix[13].Add("Key", "PLCSpindleOverride");
-            //Actual Feed Override
-            matrix[14].Add("Path", "\\PLC\\memory\\W\\766");
-            matrix[14].Add("Key", "PLCFeedOverride");
-            //Error Operand
-            matrix[15].Add("Path", "\\PLC\\memory\\M\\4227");
-            matrix[15].Add("Key", "PLCError");
-
-            foreach (Dictionary<string, string> dict in matrix)
-            {
-                String sRetValue = "";
-                byte cType = 32; // space
-
-                if (SuperCom.PLSV2.Heidenhain.HN_ERR_NONE == SCom.DataGetValue(dict["Path"], ref cType, ref sRetValue))
-                {
-                    machineDict[dict["Key"]] = sRetValue;
-                }
-
-            }
-
-            machineDict["PalletNr"] = string.Format("{0}", SCom.ReadWord(38));
-
-            foreach (KeyValuePair<string, string> kvp in machineDict)
-            {
-                //Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value);
-            }
-            
-
-            //Update Machine On Server
-            UpdateMachine(machineDict);
-
-            //Check If Machine Has Error
-            //CheckForErrors(machineDict["PLCError"], SCom);
-            GetFirstError(SCom);
-            //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
-
-            //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
+            return "No Value";
         }
 
-        private string PalNrFromString(string palletNr)
+        private void UpdateMachine(Object source, ElapsedEventArgs e)
         {
-            int colon = palletNr.IndexOf("Pal:");
-            colon = colon + 5;
-            palletNr = palletNr.Substring(colon, 2);
+            machine.ProgramStatus = com.GetProgramStatus();
 
-            return palletNr;
-        }
+            Dictionary<string, string> executionPoint = com.GetExecutionPoint();
+            machine.SelectedProgram = executionPoint["NameSelectedProgram"];
+            machine.ActiveProgram = executionPoint["NameActiveProgram"];
+            machine.BlockNr = executionPoint["BlockNr"];
 
-        private void UpdateMachine(Dictionary<string, string> machineDict)
-        {
-            //Machine machine = new Machine();
+            machine.ExecutionMode = com.GetExecutionMode();
 
-            //machine.machineid = "5c8e7a1ba815dc7dca74d570";
-            //machine.MachineName = machineDict["MachineName"];
-            machine.NCSpindleOverride = machineDict["NCSpindleOverride"];
-            machine.NCFeedOveride = machineDict["NCFeedOverride"];
-            machine.PLCSpindleOverride = machineDict["PLCSpindleOverride"];
-            machine.PLCFeedOverride = machineDict["PLCFeedOverride"];
-            machine.PAL = machineDict["PalletNr"];
-            machine.ProgramStatus = machineDict["ProgramStatus"];
-            machine.SelectedProgram = machineDict["NameSelectedProgram"];
-            machine.ActiveProgram = machineDict["NameActiveProgram"];
-            machine.BlockNr = machineDict["BlockNr"];
-            machine.ExecutionMode = machineDict["ExecutionMode"];
-            
-            machine.ToolName = machineDict["ToolName"];
-            machine.ToolNr = machineDict["ToolNr"];
-            machine.ToolIndex = machineDict["ToolIndex"];
-            machine.ToolAxis = machineDict["ToolAxis"];
-            machine.ToolLen = machineDict["ToolLen"];
-            machine.ToolRad = machineDict["ToolRad"];
-            machine.ToolRad2 = machineDict["ToolRad2"];
-            machine.ToolRadOversize = machineDict["ToolRadOversize"];
-            machine.ToolLenOversize = machineDict["ToolLenOversize"];
-            machine.ToolReplacmentToolNr = machineDict["ToolReplacmentToolNr"];
-            machine.ToolTime2 = machineDict["ToolTime2"];
-            machine.ToolCurTime = machineDict["ToolCurTime"];
+            machine.PAL = string.Format("{0}", com.ReadWord(40));
 
-            machine.Connected = true;
-            
+            Dictionary<string, string> tool = com.GetTool();
+            machine.ToolNr = tool["ToolNr"];
+            machine.ToolIndex = tool["ToolIndex"];
+            machine.ToolAxis = tool["ToolAxis"];
+            machine.ToolLen = tool["ToolLen"];
+            machine.ToolRad = tool["ToolRad"];
 
-            Console.WriteLine("Tool Replacement Nr : {0}", machine.machineid);
+            machine.ToolName = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\NAME");
+            machine.ToolLen = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\L");
+            machine.ToolRad = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\R");
+            machine.ToolRad2 = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\R2");
+            machine.ToolLenOversize = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\DL");
+            machine.ToolRadOversize = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\DR");
+            machine.ToolReplacmentToolNr = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\RT");
+            machine.ToolTime2 = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\TIME2");
+            machine.ToolCurTime = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\CUR.TIME");
+
+            Console.WriteLine(com.GetMachineSerialNumber());
+
             if (machine != null)
             {
                 KinveyNetworking network = new KinveyNetworking();
                 network.UpdateMachine(machine);
             }
 
+            GetFirstError();
         }
-
-        private void CheckForErrors1(string PLCError, MYSCOM SCom)
-        {
-            if (PLCError.Equals("TRUE"))
-            {
-                Console.WriteLine("4227 Tripped, errorReset: " + errorReset);
-
-                if (errorReset)
-                {
-                    errorReset = false;
-                    GetFirstError(SCom);
-                    Console.WriteLine("New Error");
-                }
-            }
-            else
-            {
-                errorReset = true;
-                Console.WriteLine("error reset");
-            }
-        }
-
+ 
         private void CheckForErrors(string PLCError, MYSCOM SCom)
         {
 
             if (errorReset)
             {
-                GetFirstError(SCom);
+                GetFirstError();
                 Console.WriteLine("New Error");
             }
 
         }
 
-        private void GetFirstError(MYSCOM SCom)
+        private void GetFirstError()
         {
-            Error NewError = SCom.GetFirstError();
+            Error NewError = com.GetFirstError();
 
             if (NewError == null)
             {
@@ -913,22 +741,248 @@ namespace TNCNotify
 
                 KinveyNetworking network = new KinveyNetworking();
                 network.SaveError(NewError, machine);
-                GetNextError(SCom);
+                GetNextError();
             }
            
         }
 
-        private void GetNextError(MYSCOM SCom)
+        private void GetNextError()
         {
-            Error NextError = SCom.GetNextError();
+            Error NextError = com.GetNextError();
 
             if (NextError != null)
             {
                 KinveyNetworking network = new KinveyNetworking();
                 network.SaveError(NextError, machine);
-                GetNextError(SCom);
+                GetNextError();
             }
             
         }
     }
 }
+/*
+       private void UpdateMachine(Dictionary<string, string> machineDict)
+       {
+           //Machine machine = new Machine();
+
+           //machine.machineid = "5c8e7a1ba815dc7dca74d570";
+           //machine.MachineName = machineDict["MachineName"];
+           machine.NCSpindleOverride = machineDict["NCSpindleOverride"];
+           machine.NCFeedOveride = machineDict["NCFeedOverride"];
+           machine.PLCSpindleOverride = machineDict["PLCSpindleOverride"];
+           machine.PLCFeedOverride = machineDict["PLCFeedOverride"];
+           machine.PAL = machineDict["PalletNr"];
+           machine.ProgramStatus = machineDict["ProgramStatus"];
+           machine.SelectedProgram = machineDict["NameSelectedProgram"];
+           machine.ActiveProgram = machineDict["NameActiveProgram"];
+           machine.BlockNr = machineDict["BlockNr"];
+           machine.ExecutionMode = machineDict["ExecutionMode"];
+
+           machine.ToolName = machineDict["ToolName"];
+           machine.ToolNr = machineDict["ToolNr"];
+           machine.ToolIndex = machineDict["ToolIndex"];
+           machine.ToolAxis = machineDict["ToolAxis"];
+           machine.ToolLen = machineDict["ToolLen"];
+           machine.ToolRad = machineDict["ToolRad"];
+           machine.ToolRad2 = machineDict["ToolRad2"];
+           machine.ToolRadOversize = machineDict["ToolRadOversize"];
+           machine.ToolLenOversize = machineDict["ToolLenOversize"];
+           machine.ToolReplacmentToolNr = machineDict["ToolReplacmentToolNr"];
+           machine.ToolTime2 = machineDict["ToolTime2"];
+           machine.ToolCurTime = machineDict["ToolCurTime"];
+
+           machine.Connected = true;
+
+
+           Console.WriteLine("Tool Replacement Nr : {0}", machine.machineid);
+           if (machine != null)
+           {
+               KinveyNetworking network = new KinveyNetworking();
+               network.UpdateMachine(machine);
+           }
+
+       }
+
+       private void CheckForErrors1(string PLCError, MYSCOM SCom)
+       {
+           if (PLCError.Equals("TRUE"))
+           {
+               Console.WriteLine("4227 Tripped, errorReset: " + errorReset);
+
+               if (errorReset)
+               {
+                   errorReset = false;
+                   GetFirstError();
+                   Console.WriteLine("New Error");
+               }
+           }
+           else
+           {
+               errorReset = true;
+               Console.WriteLine("error reset");
+           }
+       }
+       */
+/*
+             private void OnTimedEvent(Object source, ElapsedEventArgs e, MYSCOM SCom)
+             {
+
+                 if (!SCom.Connected)
+                 {
+                     closeConnection();
+
+                     StartMachine(null, 0);
+                 }
+
+
+
+                  * \\PLC\\memory\\S\\10 PGM name
+                  * \\PLC\\memory\\S\\25 Machine Name
+                  * \\PLC\\memory\\S\\35 Tool Name
+                  * \\PLC\\memory\\W\\264 tool number
+                  * \\PLC\\memory\\W\\492 percentage spindle override NC to PLC
+                  * \\PLC\\memory\\W\\494 percentage feed override NC to PLC
+                  * \\PLC\\memory\\W\\764 percentage spindle override PLC to NC
+                  * \\PLC\\memory\\W\\766 percentage feed override PLC to NC
+                  * \\TABLE\\'TNC:\\TNCNotify.TAB'\\NR\\0\\PAL Current Pallet Number
+                  * \\PLC\\memory\\M\\4227 PLC error operand 
+
+
+       //Dictionary To Hold New Machine Data
+       Dictionary<string, string> machineDict = new Dictionary<string, string>();
+
+           //Program Status
+           string programStatus = SCom.GetProgramStatus();
+           Console.WriteLine("programStatus: {0}", programStatus);
+           machineDict["ProgramStatus"] = programStatus;
+
+
+
+           //Program Execution Point
+           Dictionary<string, string> executionPoint = SCom.GetExecutionPoint();
+           machineDict["NameSelectedProgram"] = executionPoint["NameSelectedProgram"];
+           machineDict["NameActiveProgram"] = executionPoint["NameActiveProgram"];
+           machineDict["BlockNr"] = executionPoint["BlockNr"];
+
+           //Execution Mode
+           string executionMode = SCom.GetExecutionMode();
+           machineDict["ExecutionMode"] = executionMode;
+
+           //Tool
+           Dictionary<string, string> tool = SCom.GetTool();
+           machineDict["ToolNr"] = tool["ToolNr"];
+           machineDict["ToolIndex"] = tool["ToolIndex"];
+           machineDict["ToolAxis"] = tool["ToolAxis"];
+           machineDict["ToolLen"] = tool["ToolLen"];
+           machineDict["ToolRad"] = tool["ToolRad"];
+
+           Dictionary<string, string>[] matrix = new Dictionary<string, string>[]
+           {
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>(),
+               new Dictionary<string, string>()
+           };
+
+           //Tool Name
+           string toolNr = tool["ToolNr"];
+           matrix[0].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\NAME");
+           matrix[0].Add("Key", "ToolName");
+           //Tool Length
+           matrix[1].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\L");
+           matrix[1].Add("Key", "ToolLen");
+           //Tool Radius
+           matrix[2].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\R");
+           matrix[2].Add("Key", "ToolRad");
+           //Tool Radius2
+           matrix[3].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\R2");
+           matrix[3].Add("Key", "ToolRad2");
+           //Tool length Oversize
+           matrix[4].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\DL");
+           matrix[4].Add("Key", "ToolLenOversize");
+           //Tool Radius Oversize
+           matrix[5].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\DR");
+           matrix[5].Add("Key", "ToolRadOversize");
+           //Tool Replacement Tool
+           matrix[6].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\RT");
+           matrix[6].Add("Key", "ToolReplacmentToolNr");
+           //Tool Time2
+           matrix[7].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\TIME2");
+           matrix[7].Add("Key", "ToolTime2");
+           //Tool Current Time
+           matrix[8].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\CUR.TIME");
+           matrix[8].Add("Key", "ToolCurTime");
+           //Machine Name
+           matrix[9].Add("Path", "\\PLC\\memory\\S\\25");
+           matrix[9].Add("Key", "MachineName");
+           //Pallet Number
+           matrix[10].Add("Path", "\\PLC\\memory\\B\\38");
+           matrix[10].Add("Key", "PalletNr");
+           //NC Spindle Override
+           matrix[11].Add("Path", "\\PLC\\memory\\W\\492");
+           matrix[11].Add("Key", "NCSpindleOverride");
+           //NC Feed Override
+           matrix[12].Add("Path", "\\PLC\\memory\\W\\494");
+           matrix[12].Add("Key", "NCFeedOverride");
+           //Actual Spindle Override
+           matrix[13].Add("Path", "\\PLC\\memory\\W\\764");
+           matrix[13].Add("Key", "PLCSpindleOverride");
+           //Actual Feed Override
+           matrix[14].Add("Path", "\\PLC\\memory\\W\\766");
+           matrix[14].Add("Key", "PLCFeedOverride");
+           //Error Operand
+           matrix[15].Add("Path", "\\PLC\\memory\\M\\4227");
+           matrix[15].Add("Key", "PLCError");
+
+           foreach (Dictionary<string, string> dict in matrix)
+           {
+               String sRetValue = "";
+               byte cType = 32; // space
+
+               if (SuperCom.PLSV2.Heidenhain.HN_ERR_NONE == SCom.DataGetValue(dict["Path"], ref cType, ref sRetValue))
+               {
+                   machineDict[dict["Key"]] = sRetValue;
+               }
+
+           }
+
+           machineDict["PalletNr"] = string.Format("{0}", SCom.ReadWord(38));
+
+           foreach (KeyValuePair<string, string> kvp in machineDict)
+           {
+               //Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value);
+           }
+
+
+           //Update Machine On Server
+           UpdateMachine(machineDict);
+
+           //Check If Machine Has Error
+           //CheckForErrors(machineDict["PLCError"], SCom);
+           GetFirstError();
+           //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
+
+           //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
+       }
+
+       private string PalNrFromString(string palletNr)
+       {
+           int colon = palletNr.IndexOf("Pal:");
+           colon = colon + 5;
+           palletNr = palletNr.Substring(colon, 2);
+
+           return palletNr;
+       }
+       */

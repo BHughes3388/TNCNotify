@@ -68,7 +68,7 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Kinvey, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kinvey.4.2.0\lib\netstandard2.0\Kinvey.dll</HintPath>
+      <HintPath>..\packages\Kinvey.4.3.6\lib\netstandard2.0\Kinvey.dll</HintPath>
     </Reference>
     <Reference Include="Kinvey.Net, Version=1.0.6851.28578, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Kinvey.Net.3.1.5\lib\Kinvey.Net.dll</HintPath>
@@ -110,7 +110,7 @@
       <HintPath>..\packages\Remotion.Linq.2.2.0\lib\net45\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="SQLite-net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kinvey.4.2.0\lib\netstandard2.0\SQLite-net.dll</HintPath>
+      <HintPath>..\packages\Kinvey.4.3.6\lib\netstandard2.0\SQLite-net.dll</HintPath>
     </Reference>
     <Reference Include="SQLite.Net, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SQLite.Net.Core-PCL.3.1.1\lib\portable-win8+net45+wp8+wpa81+MonoAndroid1+MonoTouch1\SQLite.Net.dll</HintPath>
@@ -238,16 +238,16 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="SignInControl.cs">
+    <Compile Include="User Interface\SignInControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SignInControl.Designer.cs">
+    <Compile Include="User Interface\SignInControl.Designer.cs">
       <DependentUpon>SignInControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="TabControl.cs">
+    <Compile Include="User Interface\TabControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TabControl.Designer.cs">
+    <Compile Include="User Interface\TabControl.Designer.cs">
       <DependentUpon>TabControl.cs</DependentUpon>
     </Compile>
     <Compile Include="User Interface\Form1.cs">
@@ -274,10 +274,10 @@
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SignInControl.resx">
+    <EmbeddedResource Include="User Interface\SignInControl.resx">
       <DependentUpon>SignInControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TabControl.resx">
+    <EmbeddedResource Include="User Interface\TabControl.resx">
       <DependentUpon>TabControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="User Interface\Form1.resx">

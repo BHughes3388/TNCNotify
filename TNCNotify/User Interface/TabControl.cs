@@ -56,6 +56,11 @@ namespace TNCNotify
 
             machines = await network.GetMachines(machineids);
 
+            //Machine machine1 = machines[0];
+            //machine1.Name = "Bob";
+
+            //network.UpdateMachine(machine1);
+
             PopulateOnlineListView(machines);
             PopulateMchineListView(machines);
         }

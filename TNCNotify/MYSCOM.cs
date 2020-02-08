@@ -679,9 +679,13 @@ namespace TNCNotify
             machine.ProgramStatus = com.GetProgramStatus();
 
             Dictionary<string, string> executionPoint = com.GetExecutionPoint();
-            machine.SelectedProgram = executionPoint["NameSelectedProgram"];
-            machine.ActiveProgram = executionPoint["NameActiveProgram"];
-            machine.BlockNr = executionPoint["BlockNr"];
+
+            if (executionPoint != null)
+            {
+                machine.SelectedProgram = executionPoint["NameSelectedProgram"];
+                machine.ActiveProgram = executionPoint["NameActiveProgram"];
+                machine.BlockNr = executionPoint["BlockNr"];
+            }
 
             machine.ExecutionMode = com.GetExecutionMode();
 

@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Kinvey;
+using Google.Cloud.Firestore;
+//using Kinvey;
 
 
 namespace TNCNotify
@@ -27,9 +28,11 @@ namespace TNCNotify
 
         private async void Login(string username, string password)
         {
-            User myUser = await User.LoginAsync(username, password);
+            FirebaseAuthService authService = new FirebaseAuthService();
+            var firebaseAuthLink = await authService.LoginUser(username, password);
+            Console.WriteLine(firebaseAuthLink.User.Email + " logged in");
             this.Close();
-            Console.WriteLine(myUser.UserName + " logged in");
+            
 
         }
     }

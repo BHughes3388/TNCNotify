@@ -34,5 +34,17 @@ namespace TNCNotify.Properties {
                 this["FirebaseAuthJson"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LoggedIn {
+            get {
+                return ((bool)(this["LoggedIn"]));
+            }
+            set {
+                this["LoggedIn"] = value;
+            }
+        }
     }
 }

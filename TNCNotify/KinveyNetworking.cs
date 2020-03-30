@@ -8,7 +8,7 @@ using Kinvey;
 
 namespace TNCNotify
 {
-    
+    /*
     [JsonObject]
     public class Machine
     {
@@ -97,6 +97,7 @@ namespace TNCNotify
         [JsonProperty("Connected")]
         public bool Connected { get; set; }
     }
+    */
     
     [JsonObject(MemberSerialization.OptIn)]
     public class Error : Entity
@@ -192,11 +193,11 @@ namespace TNCNotify
         {
             DataStore<Error> dataStore = DataStore<Error>.Collection("Errors", DataStoreType.NETWORK);
 
-            NewError.Machine_ID = machine.machineid;
+            //NewError.Machine_ID = machine.machineid;
 
             try
             {
-                Error savedError = await dataStore.SaveAsync(NewError);
+                ///Error savedError = await dataStore.SaveAsync(NewError);
             }
             catch (KinveyException ke)
             {

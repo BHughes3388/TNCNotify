@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Kinvey;
+using TNCNotify.Properties;
 
 namespace TNCNotify
 {
@@ -17,10 +17,10 @@ namespace TNCNotify
         public Main()
         {
             InitializeComponent();
+            //FirebaseAuthService authService = new FirebaseAuthService();
+            //authService.Signout();
 
-            User user = Client.SharedClient.ActiveUser;
-            ;
-            if (user == null)
+            if (!Settings.Default.LoggedIn)
             {
                 metroUserControl.Controls.Add(new SignInControl());
             }
@@ -28,8 +28,6 @@ namespace TNCNotify
             {
                 metroUserControl.Controls.Add(new TabControl());
             }
-
-            //GetUsersMachines();
             
         }
 

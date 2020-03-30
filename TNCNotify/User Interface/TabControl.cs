@@ -21,12 +21,14 @@ namespace TNCNotify
         User[] users;
         List<MachineCom> machineComs;
         bool isRunning= false;
-
+        //private System.Timers.Timer aTimer;
+        //FirestoreNetworking networking;
 
         public TabControl()
         {
             InitializeComponent();
- 
+
+            //NetworkTimer();
             GetMachines();
         }
 
@@ -40,38 +42,21 @@ namespace TNCNotify
             Console.WriteLine("did select index {0}", metroTabControl1.SelectedTab);
             if (metroTabControl1.SelectedIndex == 2)
             {
-                GetUsers();
                 Console.WriteLine("Get Users");
             }
         }
 
         private async void GetMachines()
         {
-            User user = Client.SharedClient.ActiveUser;
+            //await StartNetwork();
 
-            List<string> machineids = user.Attributes["Machines"].ToObject<List<string>>();
-            Console.WriteLine("machine ids: " + machineids);
+            FirestoreNetworking networking = new FirestoreNetworking();
+            await networking.Start();
 
-            KinveyNetworking network = new KinveyNetworking();
-
-            machines = await network.GetMachines(machineids);
-
-            //Machine machine1 = machines[0];
-            //machine1.Name = "Bob";
-
-            //network.UpdateMachine(machine1);
-
+            List<Machine> machines = await networking.GetMachines();
             PopulateOnlineListView(machines);
             PopulateMchineListView(machines);
-        }
-
-        private async void GetUsers()
-        {
-            KinveyNetworking network = new KinveyNetworking();
-
-            users = await network.GetUsers();
-
-            Console.WriteLine("Users recieved: {0}", users);
+            networking = null;
         }
 
         private void PopulateOnlineListView(List<Machine> machines)
@@ -82,7 +67,7 @@ namespace TNCNotify
 
             foreach (Machine machine in machines)
             {
-                if (PingHost(machine.IP, 19000))
+                if (PingHost(machine.Ip, 19000))
                 {
                     onlineMachines.Add(machine);
                     Console.WriteLine("PingHost passed");
@@ -101,9 +86,9 @@ namespace TNCNotify
 
             foreach (Machine machine in onlineMachines)
             {
-                Console.WriteLine("machines name: {0} machine ip: {1} ", machine.Name, machine.IP);
+                Console.WriteLine("machines name: {0} machine ip: {1} machine reference: {2} ", machine.Name, machine.Ip, machine.Reference);
 
-                onlineMachineListView.Items.Add(new ListViewItem(new string[] {machine.Name, machine.IP, machine.MachineName }));
+                onlineMachineListView.Items.Add(new ListViewItem(new string[] {machine.Name, machine.Ip, machine.MachineName }));
             }
         }
 
@@ -118,9 +103,9 @@ namespace TNCNotify
 
             foreach (Machine machine in machines)
             {
-                Console.WriteLine("machines name: {0} machine ip: {1} ", machine.Name, machine.IP);
+                Console.WriteLine("machines name: {0} machine ip: {1} machine reference: {2} ", machine.Name, machine.Ip, machine.Reference);
 
-                machineListView.Items.Add(new ListViewItem(new string[] { machine.Name, machine.IP, machine.MachineName }));
+                machineListView.Items.Add(new ListViewItem(new string[] { machine.Name, machine.Ip, machine.MachineName }));
             }
         }
 
@@ -146,8 +131,8 @@ namespace TNCNotify
 
         private void refreshButton_Click(object sender, EventArgs e)
         {
-            //PopulateOnlineListView(machines);
-            Console.WriteLine("fix this.. refreshing is currently broken");
+            GetMachines();
+            //Console.WriteLine("fix this.. refreshing is currently broken");
         }
 
         private void startButton_Click(object sender, EventArgs e)

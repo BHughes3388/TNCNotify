@@ -26,14 +26,17 @@ namespace TNCNotify
 
         private async void Login(string username, string password)
         {
-            User myUser = await User.LoginAsync(username, password);
+            FirebaseAuthService authService = new FirebaseAuthService();
+            var firebaseAuthLink = await authService.LoginUser(username, password);
 
-            if (myUser != null)
+            //User myUser = await User.LoginAsync(username, password);
+
+            if (firebaseAuthLink != null)
             {
                 Main mainForm = (Main)this.ParentForm;
                 mainForm.RemoveSignIn();
 
-                Console.WriteLine(myUser.UserName + " logged in");
+                Console.WriteLine(firebaseAuthLink.User.Email + " logged in");
             }
             else
             {

@@ -137,16 +137,10 @@ namespace TNCNotify
 
             if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
             {
-                //Console.Out.WriteLine(" ProgramStatus={0}", SuperCom.GetStrVal(strRetBuffer, "ProgramStatus"));
                 return SuperCom.GetStrVal(strRetBuffer, "ProgramStatus");
             }
-                
-            else
-            {
-                //Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
-                return null;
-            }
 
+               return null;
         }
 
         public string GetExecutionMode()
@@ -330,11 +324,8 @@ namespace TNCNotify
                                                            cBuffer,
                                                            ref dwLen);
 
-            Console.Out.WriteLine("Read Marker at {0}, ", dwOfs);
-
             if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
             {
-                Console.Out.WriteLine(" Value={0}", cBuffer[0]);
                 return cBuffer[0];
             }
             else
@@ -358,13 +349,11 @@ namespace TNCNotify
                                                            cBuffer,
                                                            ref dwLen);
 
-            Console.Out.WriteLine("Read DWord at {0}, total bytes {1}, ", dwOfs, dwLen);
 
             if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
             {
                 System.UInt32[] a = ByteArrayToDWordArray(cBuffer, dwLen);
 
-                Console.Out.WriteLine(" Value={0}", (uint)SuperCom.PLSV2.Heidenhain.HN_SwapDWord((int)a[0]));
                 return SuperCom.PLSV2.Heidenhain.HN_SwapDWord((int)a[0]);
             }
             else
@@ -388,14 +377,12 @@ namespace TNCNotify
                                                            cBuffer,
                                                            ref dwLen);
 
-            Console.Out.WriteLine("Read Word at {0}, total bytes {1}, ", dwOfs, dwLen);
+            //Console.Out.WriteLine("Read Word at {0}, total bytes {1}, ", dwOfs, dwLen);
 
             if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
             {
                 
                 System.UInt16[] a = ByteArrayToWordArray(cBuffer, dwLen);
-                Console.Out.WriteLine(" Value={0}", (uint)SuperCom.PLSV2.Heidenhain.HN_SwapDWord((int)a[0]));
-                Console.Out.WriteLine(" Value={0}", a[0]);
                 return a[0];
             }
             else
@@ -419,39 +406,7 @@ namespace TNCNotify
             Buffer.BlockCopy(aSource, 0, aDest, 0, nByteCount);
             return aDest;
         }
-        /*
-        public void test()
-        {
-            int nErr;
 
-            int dwLen = 2;
-            byte[] Value = new byte[dwLen]; 
-            int dwOfs = 7379;
-            int dwMemStart = SuperCom.PLSV2.Heidenhain.HN_SwapDWord(SysPars.Values.WordStart + dwOfs);
-
-            nErr = SuperCom.PLSV2.Heidenhain.HN_ReadMemory(CommId, dwMemStart, Value, ref dwLen);
-
-
-            Console.Out.WriteLine("Read Word at {0}, total bytes {1}, ", dwOfs, dwLen);
-
-            if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
-            {
-
-                System.UInt16[] a = ByteArrayToWordArray(Value, dwLen);
-
-                Console.Out.WriteLine(" Value={0}", (ushort)SuperCom.PLSV2.Heidenhain.HN_SwapWord((short)a[0]));
-                Console.WriteLine("value={0}",Value[0]);
-                Console.WriteLine(a[0]);
-                Console.WriteLine(Value[0]);
-
-            }
-            else
-            {
-                Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
-            }
-
-        }
-        */
         public string GetMachineParameter(String strRequest)
         {
             int nErr;
@@ -532,7 +487,7 @@ namespace TNCNotify
 
             if (nErr == SuperCom.PLSV2.Heidenhain.HN_NO_ERROR)
             {
-                Console.WriteLine("Com id: " + CommId);
+                //Console.WriteLine("Com id: " + CommId);
 
                 Error FirstError = new Error();
 
@@ -581,7 +536,7 @@ namespace TNCNotify
             if (index <= 0)
                 index = myIndex;
 
-            CreateConnection(index, machine.IP, "19000");
+            CreateConnection(index, machine.Ip, "19000");
         }
 
         public void CreateConnection(int Com, string ip, string port)
@@ -629,6 +584,7 @@ namespace TNCNotify
             SCom.SysPars = new SuperCom.PLSV2.Heidenhain.HN_SYSTEM_PARAMS(SCom.CommId); // needs area INSPECT
 
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_DATA);
+
             SCom.DoLogIn(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
 
             errorReset = true;
@@ -674,49 +630,60 @@ namespace TNCNotify
             return "No Value";
         }
 
-        private void UpdateMachine(Object source, ElapsedEventArgs e)
+        private async void UpdateMachine(Object source, ElapsedEventArgs e)
         {
-            machine.ProgramStatus = com.GetProgramStatus();
-
             Dictionary<string, string> executionPoint = com.GetExecutionPoint();
 
-            if (executionPoint != null)
+            ExecutionData executationData = new ExecutionData()
             {
-                machine.SelectedProgram = executionPoint["NameSelectedProgram"];
-                machine.ActiveProgram = executionPoint["NameActiveProgram"];
-                machine.BlockNr = executionPoint["BlockNr"];
-            }
-
-            machine.ExecutionMode = com.GetExecutionMode();
-
-            machine.PAL = string.Format("{0}", com.ReadWord(40));
+                ProgramStatus = com.GetProgramStatus(),
+                ExecutionMode = com.GetExecutionMode(),
+                SelectedProgram = executionPoint["NameSelectedProgram"],
+                ActiveProgram = executionPoint["NameActiveProgram"],
+                BlockNumber = executionPoint["BlockNr"],
+                PalletNumber = string.Format("{0}", com.ReadWord(40))
+            };
 
             Dictionary<string, string> tool = com.GetTool();
-            machine.ToolNr = tool["ToolNr"];
-            machine.ToolIndex = tool["ToolIndex"];
-            machine.ToolAxis = tool["ToolAxis"];
-            machine.ToolLen = tool["ToolLen"];
-            machine.ToolRad = tool["ToolRad"];
+            var toolNumber = tool["ToolNr"];
 
-            machine.ToolName = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\NAME");
-            machine.ToolLen = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\L");
-            machine.ToolRad = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\R");
-            machine.ToolRad2 = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\R2");
-            machine.ToolLenOversize = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\DL");
-            machine.ToolRadOversize = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\DR");
-            machine.ToolReplacmentToolNr = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\RT");
-            machine.ToolTime2 = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\TIME2");
-            machine.ToolCurTime = DataValueForPath($"\\TABLE\\TOOL\\T\\{machine.ToolNr}\\CUR.TIME");
+            Tool toolData = new Tool()
+            {
+                Number = tool["ToolNr"],
+                Length = tool["ToolLen"],
+                Radius = tool["ToolRad"],
+                Name = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\NAME"),
+                Radius2 = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\R2"),
+                LengthOversize = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\DL"),
+                RadiusOversize = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\DR"),
+                ReplacmentToolNumber = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\RT"),
+                Time = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\TIME2"),
+                CurrentTime = DataValueForPath($"\\TABLE\\TOOL\\T\\{toolNumber}\\CUR.TIME")
+            };
 
-            Console.WriteLine(com.GetMachineSerialNumber());
+            machine.ExecutationData = executationData;
+            machine.Tool = toolData;
+
+            //Console.WriteLine(com.GetMachineSerialNumber());
 
             if (machine != null)
             {
-                KinveyNetworking network = new KinveyNetworking();
-                network.UpdateMachine(machine);
+                FirestoreNetworking networking = new FirestoreNetworking();
+                //await networking.Start();
+                try
+                {
+                    await networking.UpdateMachine(machine);
+                    networking = null;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("exception: 1 {0}", ex.Data);
+                }
+
             }
 
-            GetFirstError();
+            //GetFirstError();
+            
         }
  
         private void CheckForErrors(string PLCError, MYSCOM SCom)

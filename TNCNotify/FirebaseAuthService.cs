@@ -19,7 +19,7 @@ namespace TNCNotify
 
         public FirebaseAuthService()
         {
-            authProvider = new FirebaseAuthProvider(new FirebaseConfig("AIzaSyBKpPKz-i778h50HSLn3F8frz7zjINy-7g"));
+            authProvider = new FirebaseAuthProvider(new FirebaseConfig("AIzaSyCeeKnHz28M_ufJMHGmaUVNfY9KJ3GvxLA"));
         }
 
         public async Task<FirebaseAuthLink> LoginUser(string email, string password)
@@ -27,6 +27,7 @@ namespace TNCNotify
             var auth = await authProvider.SignInWithEmailAndPasswordAsync(email, password);
 
             SaveAuth(auth);
+            Console.WriteLine("signed in new token: {0}", auth.FirebaseToken);
             // save the new token each time it is refreshed
             auth.FirebaseAuthRefreshed += (s, e) => SaveAuth(e.FirebaseAuth);
             // use the token and let it refresh automatically (can be part of FirebaseOptions for access to Firebase DB)
@@ -50,14 +51,28 @@ namespace TNCNotify
         {
             string json = JsonConvert.SerializeObject(auth);
             Settings.Default.FirebaseAuthJson = json;
-            //Preferences.Set("logged", true);
+            Settings.Default.LoggedIn = true;
+            Settings.Default.Save();
+        }
+
+        public async Task<string> GetFreshTokenAsync()
+        {
+            Console.WriteLine("token before: {0}", LoadAuth().FirebaseToken);
+            var auth = new FirebaseAuthLink(authProvider, LoadAuth());
+
+            auth = await auth.GetFreshAuthAsync();
+            Console.WriteLine("token after: {0}", auth.FirebaseToken);
+
+            SaveAuth(auth);
+
+            return auth.FirebaseToken;
         }
 
         public Task<string> GetFreshToken()
         {
             //load token from storage
             var auth = new FirebaseAuthLink(authProvider, LoadAuth()); // LoadAuth returns FirebaseAuth, that can be saved in local storage
-                                                                       // save the new token each time it is refreshed
+
             auth.FirebaseAuthRefreshed += (s, e) => SaveAuth(e.FirebaseAuth);
             // use the token and let it refresh automatically (can be part of FirebaseOptions for access to Firebase DB)
             // Return token
@@ -65,7 +80,7 @@ namespace TNCNotify
             return Task.FromResult(auth.FirebaseToken);
         }
 
-        private FirebaseAuth LoadAuth()
+        public FirebaseAuth LoadAuth()
         {
             string json = Settings.Default.FirebaseAuthJson;
 
@@ -94,7 +109,8 @@ namespace TNCNotify
 
         public Task Signout()
         {
-            //Preferences.Clear();
+            Settings.Default.LoggedIn = false;
+            Settings.Default.Save();
 
             return null;
         }

@@ -28,27 +28,22 @@ namespace TNCNotify
             {
                 metroUserControl.Controls.Add(new TabControl());
             }
-            
         }
 
         public void RemoveSignIn()
         {
-            metroUserControl.Controls.RemoveAt(0);
-            Console.WriteLine("Remove Sign in");
-            metroUserControl.Controls.Add(new TabControl());
+            metroUserControl.Controls.RemoveAt(0); // Remove sign in
 
+            metroUserControl.Controls.Add(new TabControl());
         }
 
         public void Main_Resize(Object sender, EventArgs e)
         {
-            Console.WriteLine("resize");
-
             if (this.WindowState == FormWindowState.Minimized)
             {
                 Hide();
                 notifyIcon.Visible = true;
             }
-
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -58,5 +53,4 @@ namespace TNCNotify
             notifyIcon.Visible = false;
         }
     }
-
 }

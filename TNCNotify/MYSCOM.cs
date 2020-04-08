@@ -24,8 +24,6 @@ namespace TNCNotify
             // constructor
         }
 
-
-
         public string MyMakeStr(byte[] b)
         {
             //string s="";
@@ -450,16 +448,16 @@ namespace TNCNotify
                 Error FirstError = new Error();
 
                 string ErrorText = SuperCom.GetStrVal(strRetBuffer, "ErrorText");
-                if (ErrorText.Length > 0) FirstError.Error_Text = ErrorText;
+                if (ErrorText.Length > 0) FirstError.ErrorText = ErrorText;
 
                 string ErrorClass = SuperCom.GetStrVal(strRetBuffer, "ErrorClass");
-                if (ErrorClass.Length > 0) FirstError.Error_Class = ErrorClass;
+                if (ErrorClass.Length > 0) FirstError.ErrorClass = ErrorClass;
 
                 string ErrorGroup = SuperCom.GetStrVal(strRetBuffer, "ErrorGroup");
-                if (ErrorGroup.Length > 0) FirstError.Error_Group = ErrorGroup;
+                if (ErrorGroup.Length > 0) FirstError.ErrorGroup = ErrorGroup;
 
                 string ErrorNumber = SuperCom.GetStrVal(strRetBuffer, "ErrorNumber");
-                if (ErrorNumber.Length > 0) FirstError.Error_Nr = ErrorNumber;
+                if (ErrorNumber.Length > 0) FirstError.ErrorNumber = ErrorNumber;
 
                 //Console.WriteLine("First Error: " + FirstError.Error_Text);
 
@@ -492,24 +490,24 @@ namespace TNCNotify
                 Error FirstError = new Error();
 
                 string ErrorText = SuperCom.GetStrVal(strRetBuffer, "ErrorText");
-                if (ErrorText.Length > 0) FirstError.Error_Text = ErrorText;
+                if (ErrorText.Length > 0) FirstError.ErrorText = ErrorText;
 
                 string ErrorClass = SuperCom.GetStrVal(strRetBuffer, "ErrorClass");
-                if (ErrorClass.Length > 0) FirstError.Error_Class = ErrorClass;
+                if (ErrorClass.Length > 0) FirstError.ErrorClass = ErrorClass;
 
                 string ErrorGroup = SuperCom.GetStrVal(strRetBuffer, "ErrorGroup");
-                if (ErrorGroup.Length > 0) FirstError.Error_Group = ErrorGroup;
+                if (ErrorGroup.Length > 0) FirstError.ErrorGroup = ErrorGroup;
 
                 string ErrorNumber = SuperCom.GetStrVal(strRetBuffer, "ErrorNumber");
-                if (ErrorNumber.Length > 0) FirstError.Error_Nr = ErrorNumber;
+                if (ErrorNumber.Length > 0) FirstError.ErrorNumber = ErrorNumber;
 
-                Console.WriteLine("Next Error: " + FirstError.Error_Text);
+                Console.WriteLine("Next Error: " + FirstError.ErrorText);
 
                 return FirstError;
             }
             else
             {
-                Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
+                //Console.Out.WriteLine("err {0}, {1}", nErr, HNGetLastError());
 
                 return null;
             }
@@ -669,26 +667,16 @@ namespace TNCNotify
             if (machine != null)
             {
                 FirestoreNetworking networking = new FirestoreNetworking();
-                //await networking.Start();
-                try
-                {
-                    await networking.UpdateMachine(machine);
-                    networking = null;
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("exception: 1 {0}", ex.Data);
-                }
+                networking.UpdateMachine(machine);
 
             }
 
-            //GetFirstError();
+            GetFirstError();
             
         }
  
         private void CheckForErrors(string PLCError, MYSCOM SCom)
         {
-
             if (errorReset)
             {
                 GetFirstError();
@@ -710,8 +698,11 @@ namespace TNCNotify
             {
                 errorReset = false;
 
-                KinveyNetworking network = new KinveyNetworking();
-                network.SaveError(NewError, machine);
+                NewError.MachineId = machine.ReferenceId;
+
+                FirestoreNetworking networking = new FirestoreNetworking();
+                networking.SaveError(NewError);
+
                 GetNextError();
             }
            
@@ -723,237 +714,15 @@ namespace TNCNotify
 
             if (NextError != null)
             {
-                KinveyNetworking network = new KinveyNetworking();
-                network.SaveError(NextError, machine);
+                NextError.MachineId = machine.ReferenceId;
+
+                FirestoreNetworking networking = new FirestoreNetworking();
+                networking.SaveError(NextError);
+
                 GetNextError();
             }
             
         }
     }
 }
-/*
-       private void UpdateMachine(Dictionary<string, string> machineDict)
-       {
-           //Machine machine = new Machine();
 
-           //machine.machineid = "5c8e7a1ba815dc7dca74d570";
-           //machine.MachineName = machineDict["MachineName"];
-           machine.NCSpindleOverride = machineDict["NCSpindleOverride"];
-           machine.NCFeedOveride = machineDict["NCFeedOverride"];
-           machine.PLCSpindleOverride = machineDict["PLCSpindleOverride"];
-           machine.PLCFeedOverride = machineDict["PLCFeedOverride"];
-           machine.PAL = machineDict["PalletNr"];
-           machine.ProgramStatus = machineDict["ProgramStatus"];
-           machine.SelectedProgram = machineDict["NameSelectedProgram"];
-           machine.ActiveProgram = machineDict["NameActiveProgram"];
-           machine.BlockNr = machineDict["BlockNr"];
-           machine.ExecutionMode = machineDict["ExecutionMode"];
-
-           machine.ToolName = machineDict["ToolName"];
-           machine.ToolNr = machineDict["ToolNr"];
-           machine.ToolIndex = machineDict["ToolIndex"];
-           machine.ToolAxis = machineDict["ToolAxis"];
-           machine.ToolLen = machineDict["ToolLen"];
-           machine.ToolRad = machineDict["ToolRad"];
-           machine.ToolRad2 = machineDict["ToolRad2"];
-           machine.ToolRadOversize = machineDict["ToolRadOversize"];
-           machine.ToolLenOversize = machineDict["ToolLenOversize"];
-           machine.ToolReplacmentToolNr = machineDict["ToolReplacmentToolNr"];
-           machine.ToolTime2 = machineDict["ToolTime2"];
-           machine.ToolCurTime = machineDict["ToolCurTime"];
-
-           machine.Connected = true;
-
-
-           Console.WriteLine("Tool Replacement Nr : {0}", machine.machineid);
-           if (machine != null)
-           {
-               KinveyNetworking network = new KinveyNetworking();
-               network.UpdateMachine(machine);
-           }
-
-       }
-
-       private void CheckForErrors1(string PLCError, MYSCOM SCom)
-       {
-           if (PLCError.Equals("TRUE"))
-           {
-               Console.WriteLine("4227 Tripped, errorReset: " + errorReset);
-
-               if (errorReset)
-               {
-                   errorReset = false;
-                   GetFirstError();
-                   Console.WriteLine("New Error");
-               }
-           }
-           else
-           {
-               errorReset = true;
-               Console.WriteLine("error reset");
-           }
-       }
-       */
-/*
-             private void OnTimedEvent(Object source, ElapsedEventArgs e, MYSCOM SCom)
-             {
-
-                 if (!SCom.Connected)
-                 {
-                     closeConnection();
-
-                     StartMachine(null, 0);
-                 }
-
-
-
-                  * \\PLC\\memory\\S\\10 PGM name
-                  * \\PLC\\memory\\S\\25 Machine Name
-                  * \\PLC\\memory\\S\\35 Tool Name
-                  * \\PLC\\memory\\W\\264 tool number
-                  * \\PLC\\memory\\W\\492 percentage spindle override NC to PLC
-                  * \\PLC\\memory\\W\\494 percentage feed override NC to PLC
-                  * \\PLC\\memory\\W\\764 percentage spindle override PLC to NC
-                  * \\PLC\\memory\\W\\766 percentage feed override PLC to NC
-                  * \\TABLE\\'TNC:\\TNCNotify.TAB'\\NR\\0\\PAL Current Pallet Number
-                  * \\PLC\\memory\\M\\4227 PLC error operand 
-
-
-       //Dictionary To Hold New Machine Data
-       Dictionary<string, string> machineDict = new Dictionary<string, string>();
-
-           //Program Status
-           string programStatus = SCom.GetProgramStatus();
-           Console.WriteLine("programStatus: {0}", programStatus);
-           machineDict["ProgramStatus"] = programStatus;
-
-
-
-           //Program Execution Point
-           Dictionary<string, string> executionPoint = SCom.GetExecutionPoint();
-           machineDict["NameSelectedProgram"] = executionPoint["NameSelectedProgram"];
-           machineDict["NameActiveProgram"] = executionPoint["NameActiveProgram"];
-           machineDict["BlockNr"] = executionPoint["BlockNr"];
-
-           //Execution Mode
-           string executionMode = SCom.GetExecutionMode();
-           machineDict["ExecutionMode"] = executionMode;
-
-           //Tool
-           Dictionary<string, string> tool = SCom.GetTool();
-           machineDict["ToolNr"] = tool["ToolNr"];
-           machineDict["ToolIndex"] = tool["ToolIndex"];
-           machineDict["ToolAxis"] = tool["ToolAxis"];
-           machineDict["ToolLen"] = tool["ToolLen"];
-           machineDict["ToolRad"] = tool["ToolRad"];
-
-           Dictionary<string, string>[] matrix = new Dictionary<string, string>[]
-           {
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>(),
-               new Dictionary<string, string>()
-           };
-
-           //Tool Name
-           string toolNr = tool["ToolNr"];
-           matrix[0].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\NAME");
-           matrix[0].Add("Key", "ToolName");
-           //Tool Length
-           matrix[1].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\L");
-           matrix[1].Add("Key", "ToolLen");
-           //Tool Radius
-           matrix[2].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\R");
-           matrix[2].Add("Key", "ToolRad");
-           //Tool Radius2
-           matrix[3].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\R2");
-           matrix[3].Add("Key", "ToolRad2");
-           //Tool length Oversize
-           matrix[4].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\DL");
-           matrix[4].Add("Key", "ToolLenOversize");
-           //Tool Radius Oversize
-           matrix[5].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\DR");
-           matrix[5].Add("Key", "ToolRadOversize");
-           //Tool Replacement Tool
-           matrix[6].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\RT");
-           matrix[6].Add("Key", "ToolReplacmentToolNr");
-           //Tool Time2
-           matrix[7].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\TIME2");
-           matrix[7].Add("Key", "ToolTime2");
-           //Tool Current Time
-           matrix[8].Add("Path", $"\\TABLE\\TOOL\\T\\{toolNr}\\CUR.TIME");
-           matrix[8].Add("Key", "ToolCurTime");
-           //Machine Name
-           matrix[9].Add("Path", "\\PLC\\memory\\S\\25");
-           matrix[9].Add("Key", "MachineName");
-           //Pallet Number
-           matrix[10].Add("Path", "\\PLC\\memory\\B\\38");
-           matrix[10].Add("Key", "PalletNr");
-           //NC Spindle Override
-           matrix[11].Add("Path", "\\PLC\\memory\\W\\492");
-           matrix[11].Add("Key", "NCSpindleOverride");
-           //NC Feed Override
-           matrix[12].Add("Path", "\\PLC\\memory\\W\\494");
-           matrix[12].Add("Key", "NCFeedOverride");
-           //Actual Spindle Override
-           matrix[13].Add("Path", "\\PLC\\memory\\W\\764");
-           matrix[13].Add("Key", "PLCSpindleOverride");
-           //Actual Feed Override
-           matrix[14].Add("Path", "\\PLC\\memory\\W\\766");
-           matrix[14].Add("Key", "PLCFeedOverride");
-           //Error Operand
-           matrix[15].Add("Path", "\\PLC\\memory\\M\\4227");
-           matrix[15].Add("Key", "PLCError");
-
-           foreach (Dictionary<string, string> dict in matrix)
-           {
-               String sRetValue = "";
-               byte cType = 32; // space
-
-               if (SuperCom.PLSV2.Heidenhain.HN_ERR_NONE == SCom.DataGetValue(dict["Path"], ref cType, ref sRetValue))
-               {
-                   machineDict[dict["Key"]] = sRetValue;
-               }
-
-           }
-
-           machineDict["PalletNr"] = string.Format("{0}", SCom.ReadWord(38));
-
-           foreach (KeyValuePair<string, string> kvp in machineDict)
-           {
-               //Console.WriteLine("{0} : {1}", kvp.Key, kvp.Value);
-           }
-
-
-           //Update Machine On Server
-           UpdateMachine(machineDict);
-
-           //Check If Machine Has Error
-           //CheckForErrors(machineDict["PLCError"], SCom);
-           GetFirstError();
-           //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_PLCDEBUG);
-
-           //SCom.DoLogOut(SuperCom.PLSV2.Heidenhain.AREA_DATA);
-       }
-
-       private string PalNrFromString(string palletNr)
-       {
-           int colon = palletNr.IndexOf("Pal:");
-           colon = colon + 5;
-           palletNr = palletNr.Substring(colon, 2);
-
-           return palletNr;
-       }
-       */
